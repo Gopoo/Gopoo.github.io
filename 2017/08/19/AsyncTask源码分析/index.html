@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android源码," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="AsyncTask是一种轻量级的异步类，在执行的过程中将执行的情况返回给主线程并在主线程更新UI Example1234567891011121314151617181920212223242526Here is an example of subclassing from Google: private class DownloadFilesTask extends AsyncTask&amp;lt;U">
+<meta name="keywords" content="Android源码">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AsyncTask源码分析">
+<meta property="og:url" content="http://www.unfamous.cn/2017/08/19/AsyncTask源码分析/index.html">
+<meta property="og:site_name" content="Gopoo&#39;s blog">
+<meta property="og:description" content="AsyncTask是一种轻量级的异步类，在执行的过程中将执行的情况返回给主线程并在主线程更新UI Example1234567891011121314151617181920212223242526Here is an example of subclassing from Google: private class DownloadFilesTask extends AsyncTask&amp;lt;U">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-11-03T14:58:52.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AsyncTask源码分析">
+<meta name="twitter:description" content="AsyncTask是一种轻量级的异步类，在执行的过程中将执行的情况返回给主线程并在主线程更新UI Example1234567891011121314151617181920212223242526Here is an example of subclassing from Google: private class DownloadFilesTask extends AsyncTask&amp;lt;U">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.unfamous.cn/2017/08/19/AsyncTask源码分析/"/>
+
+
+
+
+
+  <title>AsyncTask源码分析 | Gopoo's blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Gopoo's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.unfamous.cn/2017/08/19/AsyncTask源码分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gopoo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Gopoo's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">AsyncTask源码分析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-19T20:18:54+08:00">
+                2017-08-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>AsyncTask是一种轻量级的异步类，在执行的过程中将执行的情况返回给主线程并在主线程更新UI</p>
+<h3 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">Here is an example of subclassing from Google:</div><div class="line"> private class DownloadFilesTask extends AsyncTask&lt;URL, Integer, Long&gt; &#123;</div><div class="line">     protected Long doInBackground(URL... urls) &#123;</div><div class="line">         int count = urls.length;</div><div class="line">         long totalSize = 0;</div><div class="line">         for (int i = 0; i &lt; count; i++) &#123;</div><div class="line">             totalSize += Downloader.downloadFile(urls[i]);</div><div class="line">             publishProgress((int) ((i / (float) count) * 100));</div><div class="line">             // Escape early if cancel() is called</div><div class="line">             if (isCancelled()) break;</div><div class="line">         &#125;</div><div class="line">         return totalSize;</div><div class="line">     &#125;</div><div class="line"></div><div class="line">     protected void onProgressUpdate(Integer... progress) &#123;</div><div class="line">         setProgressPercent(progress[0]);</div><div class="line">     &#125;</div><div class="line"></div><div class="line">     protected void onPostExecute(Long result) &#123;</div><div class="line">         showDialog(&quot;Downloaded &quot; + result + &quot; bytes&quot;);</div><div class="line">     &#125;</div><div class="line"> &#125;</div><div class="line"> Once created, a task is executed very simply:</div><div class="line">	DownloadFilesTask task1 = new DownloadFilesTask()</div><div class="line">	task1.execute(url1); </div><div class="line">    task1.execute(url2);  // IllegalStateException(&quot;Cannot execute task: the task is already running.&quot;); or (&quot;Cannot execute task: the task has already been executed a task can be executed only once)&quot;)</div></pre></td></tr></table></figure>
+<h3 id="使用限制"><a href="#使用限制" class="headerlink" title="使用限制"></a>使用限制</h3><ul>
+<li>只能在主线程中创建对象</li>
+<li>只能在主线程执行execute()方法</li>
+<li>只能执行一次</li>
+</ul>
+<h3 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h3><ul>
+<li><p>execute方法调用executeOnExecutor并传递默认线程池及params</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public final AsyncTask&lt;Params, Progress, Result&gt; execute(Params... params) &#123;</div><div class="line">      return executeOnExecutor(sDefaultExecutor, params);</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>executeOnExecutor判端当前状态是否为PENDING，否则抛出异常，封装params参数为mFuture对象（构造函数中将mWorker传递给mFuture），将该对象持有的mStatus对象改为RUNNING，导致一个AsyncTas只可执行一次。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">public final AsyncTask&lt;Params, Progress, Result&gt; executeOnExecutor(Executor exec,Params... params) &#123;</div><div class="line">    if (mStatus != Status.PENDING) &#123;</div><div class="line">        switch (mStatus) &#123;</div><div class="line">            case RUNNING:</div><div class="line">                throw new IllegalStateException(&quot;Cannot execute task:&quot;</div><div class="line">                       + &quot; the task is already running.&quot;);</div><div class="line">           case FINISHED:</div><div class="line">                throw new IllegalStateException(&quot;Cannot execute task:&quot;</div><div class="line">                        + &quot; the task has already been executed &quot;</div><div class="line">                        + &quot;(a task can be executed only once)&quot;);</div><div class="line">        &#125;</div><div class="line">   &#125;</div><div class="line"> </div><div class="line">    mStatus = Status.RUNNING;</div><div class="line"> </div><div class="line">    onPreExecute();</div><div class="line"> </div><div class="line">    mWorker.mParams = params;</div><div class="line">    exec.execute(mFuture);</div><div class="line"> </div><div class="line">    return this;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>线程池sDefaultExecutor(static,串行)开始执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public static void execute(Runnable runnable) &#123;</div><div class="line">    sDefaultExecutor.execute(runnable);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>sDefaultExecutor将runnable放入一双端队列中，判端当前是否有活动的Runable对象，若没有就从队列中获取一不为空的Runable对象，并用线程池执行该对象。执行结束后再执行下一个Runnable对象。这就使AsyncTask串行execute()各个对象。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">private static class SerialExecutor implements Executor &#123;</div><div class="line">    final ArrayDeque&lt;Runnable&gt; mTasks = new ArrayDeque&lt;Runnable&gt;();</div><div class="line">    Runnable mActive;</div><div class="line"> </div><div class="line">    public synchronized void execute(final Runnable r) &#123;</div><div class="line">        mTasks.offer(new Runnable() &#123;</div><div class="line">           public void run() &#123;</div><div class="line">                try &#123;</div><div class="line">                    r.run();</div><div class="line">                &#125; finally &#123;</div><div class="line">                    scheduleNext();</div><div class="line">               &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line">       if (mActive == null) &#123;</div><div class="line">            scheduleNext();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">    protected synchronized void scheduleNext() &#123;</div><div class="line">        if ((mActive = mTasks.poll()) != null) &#123;</div><div class="line">            THREAD_POOL_EXECUTOR.execute(mActive);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>以上为使用execute()方法时执行情况，若执行executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,url1)方法则直接使用THREAD_POOL_EXECUTOR线程池并行执行url1、url2等任务。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">  public final AsyncTask&lt;Params, Progress, Result&gt; executeOnExecutor(Executor exec,Params... params) &#123;</div><div class="line">      if (mStatus != Status.PENDING) &#123;</div><div class="line">       ...</div><div class="line">     &#125;</div><div class="line">...</div><div class="line">      exec.execute(mFuture);</div><div class="line">      return this;</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="AsyncTask中的线程池"><a href="#AsyncTask中的线程池" class="headerlink" title="AsyncTask中的线程池"></a>AsyncTask中的线程池</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public static final Executor THREAD_POOL_EXECUTOR</div><div class="line">        = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE</div><div class="line">        ,TimeUnit.SECONDS, sPoolWorkQueue, sThreadFactory);</div></pre></td></tr></table></figure>
+<p>AsyncTask中共有两个线程池SerialExecutor、THREAD_POOL_EXECUTOR，SerialExecutor串行执行各个AsyncTask对象，THREAD_POOL_EXECUTOR为并行执行的线程池，执行耗时操作</p>
+<h3 id="AsyncTask缺陷"><a href="#AsyncTask缺陷" class="headerlink" title="AsyncTask缺陷"></a>AsyncTask缺陷</h3><p>由于最近要面试滴滴，发现面经上有此问题，故更新<br>1.生命周期<br>当前activity结束后，doInBackground仍会执行到结束，若没有cancel，将会执行onPostExecuted导致程序崩溃<br>2.内存泄漏<br>若在activity中采用静态内部类的asynctask，在finish后，asynctask仍持有activity的引用，导致内存溢出<br>3.并行串行<br>execute方法只能执行一次，且多个对象依次执行，并行只能采用executeOnExecutor()</p>
+<p><em>更新于2017年11月3日</em></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.png" alt="Gopoo WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android源码/" rel="tag"># Android源码</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/26/设计模式之行为型/" rel="next" title="设计模式之行为型">
+                <i class="fa fa-chevron-left"></i> 设计模式之行为型
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/31/IntentService源码分析/" rel="prev" title="IntentService源码分析">
+                IntentService源码分析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <p class="site-author-name" itemprop="name">Gopoo</p>
+            <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives/">
+            
+                <span class="site-state-item-count">19</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gopoo" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="zzz@cumt.edu.cn" target="_blank" title="E-Mail">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                    
+                      E-Mail
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Example"><span class="nav-number">1.</span> <span class="nav-text">Example</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用限制"><span class="nav-number">2.</span> <span class="nav-text">使用限制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#工作原理"><span class="nav-number">3.</span> <span class="nav-text">工作原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AsyncTask中的线程池"><span class="nav-number">4.</span> <span class="nav-text">AsyncTask中的线程池</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AsyncTask缺陷"><span class="nav-number">5.</span> <span class="nav-text">AsyncTask缺陷</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gopoo</span>
+
+  
+</div>
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="我以前怎么写项目？1234567891011121314151617181920@Overridepublic void onCreate(@Nullable Bundle savedInstanceState) &amp;#123;    super.onCreate(savedInstanceState);    initToolBar()....    button.setOnClickListen">
+<meta name="keywords" content="Android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浅谈组件化封装思想">
+<meta property="og:url" content="http://www.unfamous.cn/2017/11/05/浅谈组件化封装思想/index.html">
+<meta property="og:site_name" content="Gopoo&#39;s blog">
+<meta property="og:description" content="我以前怎么写项目？1234567891011121314151617181920@Overridepublic void onCreate(@Nullable Bundle savedInstanceState) &amp;#123;    super.onCreate(savedInstanceState);    initToolBar()....    button.setOnClickListen">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://ss1.baidu.com/5aR1cTe9KgQFm2e88IuM_a/it?qt=spg&c=316&coord=L|13041874.92,4034046.11;13042007.03,4034665.90;13041861.90,4033680.11;13041941.72,4033780.88;">
+<meta property="og:image" content="https://raw.githubusercontent.com/halibobo/BlogImage/master/blog/module/module.png">
+<meta property="og:updated_time" content="2017-11-06T06:09:50.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="浅谈组件化封装思想">
+<meta name="twitter:description" content="我以前怎么写项目？1234567891011121314151617181920@Overridepublic void onCreate(@Nullable Bundle savedInstanceState) &amp;#123;    super.onCreate(savedInstanceState);    initToolBar()....    button.setOnClickListen">
+<meta name="twitter:image" content="https://ss1.baidu.com/5aR1cTe9KgQFm2e88IuM_a/it?qt=spg&c=316&coord=L|13041874.92,4034046.11;13042007.03,4034665.90;13041861.90,4033680.11;13041941.72,4033780.88;">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.unfamous.cn/2017/11/05/浅谈组件化封装思想/"/>
+
+
+
+
+
+  <title>浅谈组件化封装思想 | Gopoo's blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Gopoo's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.unfamous.cn/2017/11/05/浅谈组件化封装思想/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gopoo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Gopoo's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">浅谈组件化封装思想</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-05T14:26:39+08:00">
+                2017-11-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="我以前怎么写项目？"><a href="#我以前怎么写项目？" class="headerlink" title="我以前怎么写项目？"></a>我以前怎么写项目？</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public void onCreate(@Nullable Bundle savedInstanceState) &#123;</div><div class="line">    super.onCreate(savedInstanceState);</div><div class="line">    initToolBar()....</div><div class="line">    button.setOnClickListener(new View.OnClickListener() &#123;</div><div class="line">        @Override</div><div class="line">        public void onClick(View v) &#123;</div><div class="line">            new Thread()&#123;</div><div class="line">                @Override</div><div class="line">                public void run()&#123;</div><div class="line">               		HttpUrlConnection...</div><div class="line">		InpustSream is= connection.getInputStream...</div><div class="line">                    File image = is...</div><div class="line">                    msg.obj = bitmap...</div><div class="line">                    handler.sendMsg...</div><div class="line">                &#125;.start();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>谈组件化封装思想，首先看我以前怎么写代码。这是其中一个具体的activity，先初始化ToolBar,再给按钮设置监听事件，点击后开启线程进行Http请求，请求后获取输入流，保存到文件，再发送到主线程，设置imageview的图片。如果另一个activity也要进行下载图片，我就需要把代码再复制一次，如果出现bug或有新业务需求，就需要再改每一个activity，不得不说，耦合性很严重。</p>
+<h3 id="现在？"><a href="#现在？" class="headerlink" title="现在？"></a>现在？</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">public class HomeFragment extends BaseActivity &#123;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public Integer setLayoutID() &#123;</div><div class="line">        return R.layout.fragment_launcher;</div><div class="line">    &#125;</div><div class="line">     @Override</div><div class="line">    public void initToolBar() &#123;</div><div class="line">        super.initToolBar();</div><div class="line">        &#123;</div><div class="line">        	toolbar.setText(&quot;首页&quot;);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    @OnClick(R.id.bt_download)</div><div class="line">    public void onClickDownload()&#123;</div><div class="line">    	 HttpClient.builder()</div><div class="line">                .url(&quot;xxxxxx.jpg&quot;)</div><div class="line">                .loader(getContext(),null)</div><div class="line">                .file(getExternalCacheDir().getAbsolutePath()+&quot;/img/&quot;,hello.jpg&quot;)</div><div class="line">                .success(mSuccess)</div><div class="line">                .failure(mFailure)</div><div class="line">                .error(mError)</div><div class="line">                .build()</div><div class="line">                .get();</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+<p>将一些常用的空间封装在BaseActivity，可以重写方法对其进行差异化更新，下载封装为一个HttpClient类，包含加载动画，文件路径，成功失败的回调接口。现在比以前好一点，出现bug可以修改BaseActivity或者封装好的库就可以了。</p>
+<h3 id="更好的选择"><a href="#更好的选择" class="headerlink" title="更好的选择"></a>更好的选择</h3><p><img src="https://ss1.baidu.com/5aR1cTe9KgQFm2e88IuM_a/it?qt=spg&amp;c=316&amp;coord=L|13041874.92,4034046.11;13042007.03,4034665.90;13041861.90,4033680.11;13041941.72,4033780.88;" alt=""><br>如果要修建一所大学的新校区，设计师先设计学校整体的规划，哪里是图书馆、哪里是教学区、哪里是试验楼…，设计好总体架构后，应该为每栋楼进行设计，然后开始建造每栋楼，一栋楼建好就可以测试是否可以使用，如果不行，就可以单独修复，最后修好校园道路，就结束了。</p>
+<p><img src="https://raw.githubusercontent.com/halibobo/BlogImage/master/blog/module/module.png" alt=""><br>我们开发APP也应有这种思想：<br>1.创建Lib，将工具类、网络、文件等类在其中<br>2.创建Lib，将公共资源、drawable、String等放在其中<br>3.将APP分成多个模块，如登陆注册模块、商品详情模块、提交商品模块，每个模块要添加并引用1、2创建好的lib<br>4.逐一开发某个模块，build时可以作为app进行测试，非build仅作为lib，见下方gradle中脚本<br>5.将所有组件引入到工程的app中<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">if (IsBuildMudle.toBoolean()) &#123;</div><div class="line">    apply plugin: &apos;com.android.application&apos;</div><div class="line">&#125; else &#123;</div><div class="line">    apply plugin: &apos;com.android.library&apos;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.png" alt="Gopoo WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/11/04/初探Binder机制/" rel="next" title="初探Binder机制">
+                <i class="fa fa-chevron-left"></i> 初探Binder机制
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/11/08/HashMap源码分析/" rel="prev" title="HashMap源码分析">
+                HashMap源码分析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <p class="site-author-name" itemprop="name">Gopoo</p>
+            <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives/">
+            
+                <span class="site-state-item-count">19</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gopoo" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="zzz@cumt.edu.cn" target="_blank" title="E-Mail">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                    
+                      E-Mail
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#我以前怎么写项目？"><span class="nav-number">1.</span> <span class="nav-text">我以前怎么写项目？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#现在？"><span class="nav-number">2.</span> <span class="nav-text">现在？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#更好的选择"><span class="nav-number">3.</span> <span class="nav-text">更好的选择</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gopoo</span>
+
+  
+</div>
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

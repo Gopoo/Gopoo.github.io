@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Java虚拟机," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="垃圾回收：对象被创建后，当不需要使用时不会自动消失且会一直占用系统内存直到应用程序结束，造成部分空间无法被利用，不进行回收将会内存溢出 引用计数法当一个对象被另一对象引用则计数器就加1，引用失效就减1，为0就回收当前对象  缺点：加一减一给CPU带来额外负担，无法处理两个无用对象互相引用（即a引用b，b引用a，计数器均为1，但a、b均不需要使用）的情况  标记清除法标记阶段：从根对象开始标记可到达">
+<meta name="keywords" content="Java虚拟机">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java虚拟机垃圾回收算法及垃圾回收器">
+<meta property="og:url" content="http://www.unfamous.cn/2017/11/01/Java虚拟机垃圾回收算法/index.html">
+<meta property="og:site_name" content="Gopoo&#39;s blog">
+<meta property="og:description" content="垃圾回收：对象被创建后，当不需要使用时不会自动消失且会一直占用系统内存直到应用程序结束，造成部分空间无法被利用，不进行回收将会内存溢出 引用计数法当一个对象被另一对象引用则计数器就加1，引用失效就减1，为0就回收当前对象  缺点：加一减一给CPU带来额外负担，无法处理两个无用对象互相引用（即a引用b，b引用a，计数器均为1，但a、b均不需要使用）的情况  标记清除法标记阶段：从根对象开始标记可到达">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://images2015.cnblogs.com/blog/908514/201607/908514-20160728195713028-1922699910.jpg">
+<meta property="og:updated_time" content="2017-11-03T16:20:52.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java虚拟机垃圾回收算法及垃圾回收器">
+<meta name="twitter:description" content="垃圾回收：对象被创建后，当不需要使用时不会自动消失且会一直占用系统内存直到应用程序结束，造成部分空间无法被利用，不进行回收将会内存溢出 引用计数法当一个对象被另一对象引用则计数器就加1，引用失效就减1，为0就回收当前对象  缺点：加一减一给CPU带来额外负担，无法处理两个无用对象互相引用（即a引用b，b引用a，计数器均为1，但a、b均不需要使用）的情况  标记清除法标记阶段：从根对象开始标记可到达">
+<meta name="twitter:image" content="http://images2015.cnblogs.com/blog/908514/201607/908514-20160728195713028-1922699910.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.unfamous.cn/2017/11/01/Java虚拟机垃圾回收算法/"/>
+
+
+
+
+
+  <title>Java虚拟机垃圾回收算法及垃圾回收器 | Gopoo's blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Gopoo's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.unfamous.cn/2017/11/01/Java虚拟机垃圾回收算法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gopoo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Gopoo's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Java虚拟机垃圾回收算法及垃圾回收器</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-01T15:46:00+08:00">
+                2017-11-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>垃圾回收：对象被创建后，当不需要使用时不会自动消失且会一直占用系统内存直到应用程序结束，造成部分空间无法被利用，不进行回收将会内存溢出</p>
+<h3 id="引用计数法"><a href="#引用计数法" class="headerlink" title="引用计数法"></a>引用计数法</h3><p>当一个对象被另一对象引用则计数器就加1，引用失效就减1，为0就回收当前对象</p>
+<blockquote>
+<p>缺点：加一减一给CPU带来额外负担，无法处理两个无用对象互相引用（即a引用b，b引用a，计数器均为1，但a、b均不需要使用）的情况</p>
+</blockquote>
+<h3 id="标记清除法"><a href="#标记清除法" class="headerlink" title="标记清除法"></a>标记清除法</h3><p>标记阶段：从根对象开始标记可到达的对象，未被标记即为垃圾对象<br>清除阶段：将未被标记的对象进行清除</p>
+<blockquote>
+<p>缺点:带来内存空间碎片，增加大对象存放的时间或者可能性，部分空间可能无法使用</p>
+</blockquote>
+<h3 id="复制算法"><a href="#复制算法" class="headerlink" title="复制算法"></a>复制算法</h3><p>将内存分为连个区域A、B，使用A区域进行内存回收时，判断A中需要继续保存的对象，将这些对象复制进B，对A区域进行全部回收，开始使用B</p>
+<blockquote>
+<p>缺点：内存分为两个区域，降低了内存最大可用程度，垃圾对象远远少于存活对象时需要复制大量对象</p>
+</blockquote>
+<h3 id="标记压缩法"><a href="#标记压缩法" class="headerlink" title="标记压缩法"></a>标记压缩法</h3><p>将所有使用的对象进行标记，压缩到内存区域的一端，将边界外所有对象清除，避免了碎片，不需要将内存折半</p>
+<h3 id="分代算法"><a href="#分代算法" class="headerlink" title="分代算法"></a>分代算法</h3><p><img src="http://images2015.cnblogs.com/blog/908514/201607/908514-20160728195713028-1922699910.jpg" alt=""></p>
+<ul>
+<li>新生代：新生代保存大量刚创建的对象，垃圾对象较多，存活对象少，适合采用复制算法</li>
+<li>老年代：采用标记清除法、标记压缩法<blockquote>
+<p>新生代的复制算法</p>
+<ul>
+<li>所有刚创建的对象位于Eden区，经历一次GC后（若此时From正在被使用），将Eden区中需要存活的对象放入to区，from中需要存活的对象GC年龄加1后放入to区（若年龄大于老年代的要求即放入老年代），其他对象回收</li>
+<li>Eden区中的对象可能被老年代中对象引用，可根据卡表标记老年对象是否持有新生代对象而不需要GC时扫描每一个老年对象</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<h3 id="分区算法"><a href="#分区算法" class="headerlink" title="分区算法"></a>分区算法</h3><p>将堆空间划分成连续的不同小区间，独立使用，独立回收，不需要对整个堆进行回收，降低GC耗时停顿（GC时暂停所有操作）</p>
+<h3 id="垃圾回收器"><a href="#垃圾回收器" class="headerlink" title="垃圾回收器"></a>垃圾回收器</h3><ul>
+<li>新生代串行回收器：单线程，独占式（GC线程执行时，应用程序停止），复制算法</li>
+<li>老年代串行回收器：单线程，独占式，标记压缩法</li>
+<li>新生代ParNew回收器：多线程回收，独占式，复制算法</li>
+<li>新生代Parallel回收器：多线程，独占式，复制算法，关注系统吞吐量（GC吞吐量大则GC停顿时间（STOP THE WORLD）大）</li>
+<li>老年代Parallel回收期：多线程，独占式，标记压缩法，吞吐量</li>
+<li>CMS回收器：多线程，非独占式，标记清除法，关注停顿时间，易造成碎片，多次GC后需要整理内存空间</li>
+<li>G1回收器：多线程，分代垃圾回收器，采用分区算法（不要求eden、survivor、old连续），部分工作可以和应用程序同时执行，回收后复制对象，减小碎片，可以只选择部分区域进行GC</li>
+</ul>
+<h3 id="附"><a href="#附" class="headerlink" title="附"></a>附</h3><ul>
+<li>对象何时进入老年代？堆空间新创建的对象均为于Eden区，老年对象将进入老年代（经历15次以上必进入老年代，未到15次也可能由于survivor区内存不够直接放入老年代）</li>
+<li>对象创建？先进行逃逸分析，进行栈上分配，再采用TLAB（线程本地分配，防止多线程竞争分配，效率下降），若对象较大，则判断是否直接放入老年代，否则放入eden</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.png" alt="Gopoo WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Java虚拟机/" rel="tag"># Java虚拟机</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/10/30/Java虚拟机基本结构/" rel="next" title="Java虚拟机基本结构">
+                <i class="fa fa-chevron-left"></i> Java虚拟机基本结构
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/11/03/class文件与dex文件区别/" rel="prev" title="class与dex区别">
+                class与dex区别 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <p class="site-author-name" itemprop="name">Gopoo</p>
+            <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives/">
+            
+                <span class="site-state-item-count">19</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gopoo" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="zzz@cumt.edu.cn" target="_blank" title="E-Mail">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                    
+                      E-Mail
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#引用计数法"><span class="nav-number">1.</span> <span class="nav-text">引用计数法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#标记清除法"><span class="nav-number">2.</span> <span class="nav-text">标记清除法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#复制算法"><span class="nav-number">3.</span> <span class="nav-text">复制算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#标记压缩法"><span class="nav-number">4.</span> <span class="nav-text">标记压缩法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分代算法"><span class="nav-number">5.</span> <span class="nav-text">分代算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分区算法"><span class="nav-number">6.</span> <span class="nav-text">分区算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#垃圾回收器"><span class="nav-number">7.</span> <span class="nav-text">垃圾回收器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#附"><span class="nav-number">8.</span> <span class="nav-text">附</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gopoo</span>
+
+  
+</div>
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

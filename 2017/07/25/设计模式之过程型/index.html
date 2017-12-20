@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Java设计模式," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="设计模式之过程型1.适配器模式（Adapter）适配器模式将某个类的接口转换成客户端期望的另一个接口表示，主要分为三类：类的适配器模式、对象的适配器模式、接口的适配器模式12345public class Source &amp;#123;      public void method1() &amp;#123;          System.out.println(&amp;quot;this is origina">
+<meta name="keywords" content="Java设计模式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式之过程型">
+<meta property="og:url" content="http://www.unfamous.cn/2017/07/25/设计模式之过程型/index.html">
+<meta property="og:site_name" content="Gopoo&#39;s blog">
+<meta property="og:description" content="设计模式之过程型1.适配器模式（Adapter）适配器模式将某个类的接口转换成客户端期望的另一个接口表示，主要分为三类：类的适配器模式、对象的适配器模式、接口的适配器模式12345public class Source &amp;#123;      public void method1() &amp;#123;          System.out.println(&amp;quot;this is origina">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-07-25T10:33:00.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="设计模式之过程型">
+<meta name="twitter:description" content="设计模式之过程型1.适配器模式（Adapter）适配器模式将某个类的接口转换成客户端期望的另一个接口表示，主要分为三类：类的适配器模式、对象的适配器模式、接口的适配器模式12345public class Source &amp;#123;      public void method1() &amp;#123;          System.out.println(&amp;quot;this is origina">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.unfamous.cn/2017/07/25/设计模式之过程型/"/>
+
+
+
+
+
+  <title>设计模式之过程型 | Gopoo's blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Gopoo's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.unfamous.cn/2017/07/25/设计模式之过程型/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gopoo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Gopoo's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">设计模式之过程型</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-25T15:20:17+08:00">
+                2017-07-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="设计模式之过程型"><a href="#设计模式之过程型" class="headerlink" title="设计模式之过程型"></a>设计模式之过程型</h2><p><strong>1.适配器模式（Adapter）</strong><br><em>适配器模式将某个类的接口转换成客户端期望的另一个接口表示，主要分为三类：类的适配器模式、对象的适配器模式、接口的适配器模式</em><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">public class Source &#123;  </div><div class="line">    public void method1() &#123;  </div><div class="line">        System.out.println(&quot;this is original method!&quot;);  </div><div class="line">    &#125;  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">public interface Targetable &#123;  </div><div class="line">    public void method1() ;</div><div class="line">    public void method2() ;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line">A.类的适配器模式</div><div class="line">public class Target1 extends Source implements Targetable&#123;  </div><div class="line">    public void method2() &#123;</div><div class="line">    System.out.println(&quot;this is target method!&quot;);  </div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">B.对象的适配器模式</div><div class="line">public class Target2 implements Targetable&#123;</div><div class="line">	private Source source;</div><div class="line">	public Target2(Source source)&#123;</div><div class="line">    this.source = source;</div><div class="line">    &#125;</div><div class="line">    public void method1() &#123;  </div><div class="line">       source.method1();</div><div class="line">    &#125; </div><div class="line">    public void method2() &#123;</div><div class="line">    System.out.println(&quot;this is target method!&quot;);  </div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">C.接口的适配器模式</div><div class="line">public abstrqact class ATarget implements Targetable&#123;</div><div class="line">    public void method1()&#123;&#125;</div><div class="line">    public void method2()&#123;&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">public class Target3 extends ATarget&#123;</div><div class="line">    public void method1()&#123;</div><div class="line">        System.out.println(&quot;this is method 1!&quot;);  </div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">public class Target4 extends ATarget&#123;</div><div class="line">    public void method2()&#123;</div><div class="line">        System.out.println(&quot;this is method 2!&quot;);  </div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>适配器模式总结</p>
+</blockquote>
+<ul>
+<li>类的适配器模式：将一个类转换成满足另一个新接口的类，创建一个新类，继承原有的类，实现新的接口即可。</li>
+<li>对象的适配器模式：将一个对象转换成满足另一个新接口的对象，创建一个Target类，持有原类的一个实例，在Target类的方法中，调用实例的方法就行。</li>
+<li>接口的适配器模式：不希望实现一个接口中所有的方法，可以创建一个抽象类，实现所有方法，我们写别的类的时候，继承抽象类。</li>
+</ul>
+<p><strong>2.装饰模式（Decorator）</strong><br><em>给一个对象增加一些新的功能</em><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public interface Sourceable&#123;</div><div class="line">	public void method();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">public class Source implements Sourceable&#123;  </div><div class="line">    public void method() &#123;  </div><div class="line">        System.out.println(&quot;this is original method!&quot;);  </div><div class="line">    &#125;  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">public class ExSource implements Sourceable&#123;  </div><div class="line">	private Sourceable s;</div><div class="line">	public ExSource(Sourceable s)&#123;</div><div class="line">    this.s = s;</div><div class="line">    &#125;</div><div class="line">    public void method() &#123;  </div><div class="line">        System.out.println(&quot;before expand&quot;);  </div><div class="line">        ···</div><div class="line">        s.method();</div><div class="line">        ···</div><div class="line">        System.out.println(&quot;end expand&quot;);  </div><div class="line">    &#125;  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">public static void main(String[] args)&#123;</div><div class="line">    Sourceable s = new Source();</div><div class="line">    ExSource e = new ExSource(s);</div><div class="line">    s.method();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>3.代理模式（Proxy）</strong><br><em>代理模式就是多一个代理类出来，替原对象进行一些操作</em><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public interface Sourceable&#123;</div><div class="line">	public void method();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">public class Source implements Sourceable&#123;  </div><div class="line">    public void method() &#123;  </div><div class="line">        System.out.println(&quot;this is original method!&quot;);  </div><div class="line">    &#125;  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">public class Proxy  implements Sourceable&#123;  </div><div class="line">	private Source s;</div><div class="line">	public Proxy ()&#123;</div><div class="line">    s = new Source();</div><div class="line">    &#125;</div><div class="line">    public void method() &#123;  </div><div class="line">        System.out.println(&quot;before proxy&quot;);  </div><div class="line">        s.method();</div><div class="line">        System.out.println(&quot;end proxy&quot;);  </div><div class="line">    &#125;  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">public static void main(String[] args)&#123;</div><div class="line">Sourceable s = new Proxy();</div><div class="line">s.method();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>代理模式与装饰模式的区别</p>
+</blockquote>
+<ul>
+<li>代理模式中类的关系不需要客户端去配置，在开始就决定了代理者与被代理者，客户（main函数中）只需要使用代理类就ok了。但是装饰者模式中，类之间的关系需要客户指定，扩展哪个类需要客户指定。</li>
+</ul>
+<p><strong>4.外观模式（Facade）</strong><br><em>外观模式是为了解决类与类之间的依赖关系</em><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">public class Computer&#123;</div><div class="line">	private Cpu cpu;</div><div class="line">    private Memory memory;</div><div class="line">    private Fan fan;</div><div class="line">	public void start()&#123;</div><div class="line">    	cpu.start();</div><div class="line">        memory.start();</div><div class="line">        fan.start();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><em>只需要在Computer类中调用start()方法，cpu、memory、fan依次启动，而不用在cpu.start()方法的最后一行加上memoty.start(),降低耦合性</em></p>
+<p><strong>5.桥接模式（Bridge）</strong><br><em>将抽象与实现解耦，使得二者可以独立变化</em><br>创建Computer抽象类及DELL、HP<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">public abstract class Computer&#123;</div><div class="line">	public CPUMode cpu;</div><div class="line">    public Computer(CPUMode cpu)&#123;</div><div class="line">    	this.cpu=cpu;</div><div class="line">    &#125;</div><div class="line">	public abstract void produceComputer();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">public class DELL extends Computer&#123;</div><div class="line">	public DELL(CPUMode cpu)&#123;</div><div class="line">    	super(cpu);</div><div class="line">    &#125;</div><div class="line">	public void produceComputer()&#123;</div><div class="line">    </div><div class="line">    System.out.println(&quot;This is DELL，&quot;+“CPU:”+cpu.produceCPUMode());  </div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">public class HP extends Computer&#123;</div><div class="line">	public HP(CPUMode cpu)&#123;</div><div class="line">    	super(cpu);</div><div class="line">    &#125;</div><div class="line">	public void produceComputer()&#123;</div><div class="line">    </div><div class="line">    System.out.println(&quot;This is DELL，&quot;+“CPU:”+cpu.produceCPUMode());  </div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>创建CPUMode及Intel、AMD<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public abstract class CPUMode&#123;</div><div class="line">	public abstract String produceCPUMode();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">public class Intel extends CPUMode&#123;</div><div class="line">	public String produceCPUMode()&#123;</div><div class="line">    return &quot;Intel Core I7&quot;；</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">public class AMD extends CPUMode&#123;</div><div class="line">	public String produceCPUMode()&#123;</div><div class="line">    return &quot;AMD A10&quot;；</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">public static void main(String[] args)&#123;</div><div class="line">    Intel i = new Intel();</div><div class="line">    AMD a = new AMD();</div><div class="line"></div><div class="line">    //DELL I7系列</div><div class="line">    DELL d1 = new DELL(i);</div><div class="line">    //DELL A10系列</div><div class="line">    DELL d2 = new DELL(i);</div><div class="line"></div><div class="line"></div><div class="line">    //HP I7系列</div><div class="line">    HP h1 = new HP(i);</div><div class="line">    //DELL A10系列</div><div class="line">    HP h2 = new DELL(i);</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>若此时Loongson芯片非常流行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">public class Loongson extends CPUMode&#123;</div><div class="line">	public String produceCPUMode()&#123;</div><div class="line">    return &quot;Loongson 3A&quot;；</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">main()&#123;</div><div class="line">Loongson l = new Loongson();</div><div class="line">DELL d3 = new DELL(l);</div><div class="line">HP h3 = new HP(l);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>Computer对应为抽象部分，CPUMode对应实现部分，桥接模式将这两个部分分开，可以分别扩展，降低耦合。</p>
+</blockquote>
+<p><strong>6.组合模式（Composite）</strong><br><em>将多个对象组合在一起进行操作，常用于表示树形结构中</em><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line">public class TreeNode &#123;  </div><div class="line">      </div><div class="line">    private String name;  </div><div class="line">    private TreeNode parent;  </div><div class="line">    private Vector&lt;TreeNode&gt; children = new Vector&lt;TreeNode&gt;();  </div><div class="line">      </div><div class="line">    public TreeNode(String name)&#123;  </div><div class="line">        this.name = name;  </div><div class="line">    &#125;  </div><div class="line">  </div><div class="line">    public String getName() &#123;  </div><div class="line">        return name;  </div><div class="line">    &#125;  </div><div class="line">  </div><div class="line">    public void setName(String name) &#123;  </div><div class="line">        this.name = name;  </div><div class="line">    &#125;  </div><div class="line">  </div><div class="line">    public TreeNode getParent() &#123;  </div><div class="line">        return parent;  </div><div class="line">    &#125;  </div><div class="line">  </div><div class="line">    public void setParent(TreeNode parent) &#123;  </div><div class="line">        this.parent = parent;  </div><div class="line">    &#125;  </div><div class="line">      </div><div class="line">    //添加孩子节点  </div><div class="line">    public void add(TreeNode node)&#123;  </div><div class="line">        children.add(node);  </div><div class="line">    &#125;  </div><div class="line">      </div><div class="line">    //删除孩子节点  </div><div class="line">    public void remove(TreeNode node)&#123;  </div><div class="line">        children.remove(node);  </div><div class="line">    &#125;  </div><div class="line">      </div><div class="line">    //取得孩子节点  </div><div class="line">    public Enumeration&lt;TreeNode&gt; getChildren()&#123;  </div><div class="line">        return children.elements();  </div><div class="line">    &#125;  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><strong>7.享元模式（Flyweight）</strong><br><em>实现对象的共享，可以减少内存的开销，通常与工厂模式一起使用(String为享元模式，多个不同名字符串对象，值相同则只在堆中创建一个)</em></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">public class GetTicketSofware&#123;</div><div class="line">	//抢票软件会多次执行此函数，会创建很多Ticket对象，占用内存</div><div class="line">	public Ticket getTicket(String from,String to)&#123;</div><div class="line"> 	    boolean getable;</div><div class="line">        long price;</div><div class="line">        ...</div><div class="line">        ...</div><div class="line">        ...</div><div class="line">    	return new Ticket(from,to,price,getable);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">public class GetTicketSofware&#123;</div><div class="line">//利用Map存储Ticket对象，实现复用</div><div class="line">	private Map&lt;String,Ticket&gt; ticketsMap = new HashMap&lt;String,Ticket&gt;();</div><div class="line">	public Ticket getTicket(String from,String to)&#123;</div><div class="line">    	String key = from+to;</div><div class="line">        if(ticketsMap.containsKey(key))&#123;</div><div class="line">           boolean getable;</div><div class="line">           ...</div><div class="line">           ...</div><div class="line">           ...</div><div class="line">           ticketsMap.get(key).setGetable(getable);</div><div class="line">           return ticketsMap.get(key);</div><div class="line">        &#125;lese&#123;</div><div class="line">           boolean getable;</div><div class="line">           ...</div><div class="line">           ...</div><div class="line">           Ticket ticket = new Ticket(from,to,price,getable)</div><div class="line">           ticketsMap.put(key,ticket);</div><div class="line">           return ticket;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.png" alt="Gopoo WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Java设计模式/" rel="tag"># Java设计模式</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/24/设计模式之创建型/" rel="next" title="设计模式之创建型">
+                <i class="fa fa-chevron-left"></i> 设计模式之创建型
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/26/设计模式之行为型/" rel="prev" title="设计模式之行为型">
+                设计模式之行为型 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <p class="site-author-name" itemprop="name">Gopoo</p>
+            <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives/">
+            
+                <span class="site-state-item-count">19</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gopoo" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="zzz@cumt.edu.cn" target="_blank" title="E-Mail">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                    
+                      E-Mail
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#设计模式之过程型"><span class="nav-number">1.</span> <span class="nav-text">设计模式之过程型</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gopoo</span>
+
+  
+</div>
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
