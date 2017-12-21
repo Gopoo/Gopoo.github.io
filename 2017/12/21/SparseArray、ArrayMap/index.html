@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android源码," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="前言SparseArray、ArrayMap均为安卓官方开源的map，相比于HashMap，他们具有更高的性能，更加节约内存 SparseArray 介绍 SparseArrays map integers to Objects. Unlike a normal array of Objects, there can be gaps in the indices. It is intended t">
+<meta name="keywords" content="Android源码">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SparseArray、ArrayMap">
+<meta property="og:url" content="http://www.unfamous.cn/2017/12/21/SparseArray、ArrayMap/index.html">
+<meta property="og:site_name" content="Gopoo&#39;s blog">
+<meta property="og:description" content="前言SparseArray、ArrayMap均为安卓官方开源的map，相比于HashMap，他们具有更高的性能，更加节约内存 SparseArray 介绍 SparseArrays map integers to Objects. Unlike a normal array of Objects, there can be gaps in the indices. It is intended t">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-12-21T17:31:13.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SparseArray、ArrayMap">
+<meta name="twitter:description" content="前言SparseArray、ArrayMap均为安卓官方开源的map，相比于HashMap，他们具有更高的性能，更加节约内存 SparseArray 介绍 SparseArrays map integers to Objects. Unlike a normal array of Objects, there can be gaps in the indices. It is intended t">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.unfamous.cn/2017/12/21/SparseArray、ArrayMap/"/>
+
+
+
+
+
+  <title>SparseArray、ArrayMap | Gopoo's blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Gopoo's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.unfamous.cn/2017/12/21/SparseArray、ArrayMap/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gopoo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Gopoo's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">SparseArray、ArrayMap</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-21T10:22:36+08:00">
+                2017-12-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>SparseArray、ArrayMap均为安卓官方开源的map，相比于HashMap，他们具有更高的性能，更加节约内存</p>
+<h2 id="SparseArray-介绍"><a href="#SparseArray-介绍" class="headerlink" title="SparseArray 介绍"></a>SparseArray 介绍</h2><blockquote>
+<p>SparseArrays map integers to Objects. Unlike a normal array of Objects, there can be gaps in the indices. It is intended to be more memory efficient than using a HashMap to map Integers to Objects, both because it avoids auto-boxing keys and its data structure doesn’t rely on an extra entry object for each mapping.<br>Note that this container keeps its mappings in an array data structure, using a binary search to find keys.</p>
+</blockquote>
+<ul>
+<li>整数映射到对象</li>
+<li>节约内存</li>
+<li>避免自动装包 （int转integer）</li>
+<li>映射不需要额外的对象</li>
+<li>使用二分查找</li>
+</ul>
+<h2 id="SparseArray源码分析"><a href="#SparseArray源码分析" class="headerlink" title="SparseArray源码分析"></a>SparseArray源码分析</h2><p>创建对象数组及int数组，默认大小为10<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">public SparseArray() &#123;</div><div class="line">       this(10);</div><div class="line">   &#125;</div><div class="line">   public SparseArray(int initialCapacity) &#123;</div><div class="line">       if (initialCapacity == 0) &#123;</div><div class="line">           mKeys = EmptyArray.INT;</div><div class="line">           mValues = EmptyArray.OBJECT;</div><div class="line">       &#125; else &#123;</div><div class="line">           mValues = ArrayUtils.newUnpaddedObjectArray(initialCapacity);</div><div class="line">           mKeys = new int[mValues.length];</div><div class="line">       &#125;</div><div class="line">       mSize = 0;</div><div class="line">   &#125;</div></pre></td></tr></table></figure></p>
+<p>二分查找key，如果存在即更新数据，不存在判断是否被标记为删除（值为DELETED对象），若标记为删除则重新赋值<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">public void put(int key, E value) &#123;</div><div class="line">    int i = ContainerHelpers.binarySearch(mKeys, mSize, key);</div><div class="line"></div><div class="line">    if (i &gt;= 0) &#123;</div><div class="line">        mValues[i] = value;</div><div class="line">    &#125; else &#123;</div><div class="line">        i = ~i;</div><div class="line"></div><div class="line">        if (i &lt; mSize &amp;&amp; mValues[i] == DELETED) &#123;</div><div class="line">            mKeys[i] = key;</div><div class="line">            mValues[i] = value;</div><div class="line">            return;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        if (mGarbage &amp;&amp; mSize &gt;= mKeys.length) &#123;</div><div class="line">            gc();</div><div class="line"></div><div class="line">            // Search again because indices may have changed.</div><div class="line">            i = ~ContainerHelpers.binarySearch(mKeys, mSize, key);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        mKeys = GrowingArrayUtils.insert(mKeys, mSize, i, key);</div><div class="line">        mValues = GrowingArrayUtils.insert(mValues, mSize, i, value);</div><div class="line">        mSize++;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>二分查找key，不存在标记为删除返回默认值<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">public E get(int key) &#123;</div><div class="line">      return get(key, null);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  public E get(int key, E valueIfKeyNotFound) &#123;</div><div class="line">      int i = ContainerHelpers.binarySearch(mKeys, mSize, key);</div><div class="line"></div><div class="line">      if (i &lt; 0 || mValues[i] == DELETED) &#123;</div><div class="line">          return valueIfKeyNotFound;</div><div class="line">      &#125; else &#123;</div><div class="line">          return (E) mValues[i];</div><div class="line">      &#125;</div><div class="line">  &#125;</div></pre></td></tr></table></figure></p>
+<p>二分查找是否有该key,找到后将value赋值为DELETED对象，将mGarbage改为true<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">public void delete(int key) &#123;</div><div class="line">    int i = ContainerHelpers.binarySearch(mKeys, mSize, key);</div><div class="line"></div><div class="line">    if (i &gt;= 0) &#123;</div><div class="line">        if (mValues[i] != DELETED) &#123;</div><div class="line">            mValues[i] = DELETED;</div><div class="line">            mGarbage = true;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>调用一些方法时，会判断mGarbage，为true调用gc(),在gc方法中将不为DELETED的对象前移动<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">private void gc() &#123;</div><div class="line">    // Log.e(&quot;SparseArray&quot;, &quot;gc start with &quot; + mSize);</div><div class="line"></div><div class="line">    int n = mSize;</div><div class="line">    int o = 0;</div><div class="line">    int[] keys = mKeys;</div><div class="line">    Object[] values = mValues;</div><div class="line"></div><div class="line">    for (int i = 0; i &lt; n; i++) &#123;</div><div class="line">        Object val = values[i];</div><div class="line"></div><div class="line">        if (val != DELETED) &#123;</div><div class="line">            if (i != o) &#123;</div><div class="line">                keys[o] = keys[i];</div><div class="line">                values[o] = val;</div><div class="line">                values[i] = null;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            o++;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    mGarbage = false;</div><div class="line">    mSize = o;</div><div class="line"></div><div class="line">    // Log.e(&quot;SparseArray&quot;, &quot;gc end with &quot; + mSize);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>扩容(数组put时调用该方法)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">public static long[] insert(long[] array, int currentSize, int index, long element) &#123;</div><div class="line">    assert currentSize &lt;= array.length;</div><div class="line"></div><div class="line">    if (currentSize + 1 &lt;= array.length) &#123;</div><div class="line">        System.arraycopy(array, index, array, index + 1, currentSize - index);</div><div class="line">        array[index] = element;</div><div class="line">        return array;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    long[] newArray = ArrayUtils.newUnpaddedLongArray(growSize(currentSize));</div><div class="line">    System.arraycopy(array, 0, newArray, 0, index);</div><div class="line">    newArray[index] = element;</div><div class="line">    System.arraycopy(array, index, newArray, index + 1, array.length - index);</div><div class="line">    return newArray;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>小于4直接扩容到8，大于4即增加一倍<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public static int growSize(int currentSize) &#123;</div><div class="line">        return currentSize &lt;= 4 ? 8 : currentSize * 2;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+<h2 id="ArrayMap介绍"><a href="#ArrayMap介绍" class="headerlink" title="ArrayMap介绍"></a>ArrayMap介绍</h2><blockquote>
+<p>ArrayMap is a generic key-&gt;value mapping data structure that is designed to be more memory efficient than a traditional java.util.HashMap. It keeps its mappings in an array data structure – an integer array of hash codes for each item, and an Object array of the key/value pairs. This allows it to avoid having to create an extra object for every entry put in to the map, and it also tries to control the growth of the size of these arrays more aggressively (since growing them only requires copying the entries in the array, not rebuilding a hash map).</p>
+</blockquote>
+<ul>
+<li>key-&gt;value(均为对象)</li>
+<li>相比于hashmap更节约内存</li>
+<li>两个数组，一个数组存放hash值，一个数组存放 key,value,key,value…</li>
+</ul>
+<h2 id="ArrayMap源码"><a href="#ArrayMap源码" class="headerlink" title="ArrayMap源码"></a>ArrayMap源码</h2><p>无参构造函数中map容量为0，put时扩容<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">public ArrayMap() &#123;</div><div class="line">    mHashes = EmptyArray.INT;</div><div class="line">    mArray = EmptyArray.OBJECT;</div><div class="line">    mSize = 0;</div><div class="line">&#125;</div><div class="line"></div><div class="line">public ArrayMap(int capacity) &#123;</div><div class="line">    if (capacity == 0) &#123;</div><div class="line">        mHashes = EmptyArray.INT;</div><div class="line">        mArray = EmptyArray.OBJECT;</div><div class="line">    &#125; else &#123;</div><div class="line">        allocArrays(capacity);</div><div class="line">    &#125;</div><div class="line">    mSize = 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>根据hash、key在mHashes数组中寻找index，index<em>2为key存放位置，index</em>2+1存放value，扩容时，若当前size大于2<em>BaseSize则扩容为1.5</em>当前size，小于2<em>BaseSize且大于BaseSize扩容为2</em>BaseSize，小于BaseSize则扩容为BaseSize<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public V put(K key, V value) &#123;</div><div class="line">    final int hash;</div><div class="line">    int index;</div><div class="line">    if (key == null) &#123;</div><div class="line">        hash = 0;</div><div class="line">        index = indexOfNull();</div><div class="line">    &#125; else &#123;</div><div class="line">        hash = key.hashCode();</div><div class="line">        index = indexOf(key, hash);</div><div class="line">    &#125;</div><div class="line">    if (index &gt;= 0) &#123;</div><div class="line">        index = (index&lt;&lt;1) + 1;</div><div class="line">        final V old = (V)mArray[index];</div><div class="line">        mArray[index] = value;</div><div class="line">        return old;</div><div class="line">    &#125;</div><div class="line">    index = ~index;</div><div class="line">    if (mSize &gt;= mHashes.length) &#123;</div><div class="line">        final int n = mSize &gt;= (BASE_SIZE*2) ? (mSize+(mSize&gt;&gt;1))</div><div class="line">                : (mSize &gt;= BASE_SIZE ? (BASE_SIZE*2) : BASE_SIZE);</div><div class="line">        final int[] ohashes = mHashes;</div><div class="line">        final Object[] oarray = mArray;</div><div class="line">        allocArrays(n);</div><div class="line"></div><div class="line">        if (mHashes.length &gt; 0) &#123;</div><div class="line">            System.arraycopy(ohashes, 0, mHashes, 0, ohashes.length);</div><div class="line">            System.arraycopy(oarray, 0, mArray, 0, oarray.length);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        freeArrays(ohashes, oarray, mSize);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    if (index &lt; mSize) &#123;</div><div class="line">        System.arraycopy(mHashes, index, mHashes, index + 1, mSize - index);</div><div class="line">        System.arraycopy(mArray, index &lt;&lt; 1, mArray, (index + 1) &lt;&lt; 1, (mSize - index) &lt;&lt; 1);</div><div class="line">    &#125;</div><div class="line">    mHashes[index] = hash;</div><div class="line">    mArray[index&lt;&lt;1] = key;</div><div class="line">    mArray[(index&lt;&lt;1)+1] = value;</div><div class="line">    mSize++;</div><div class="line">    return null;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>二分查找mHashes中index，index*2为key则表明已存储过（现在更新），否则从index往前往后寻找<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">int index = ContainerHelpers.binarySearch(mHashes, N, hash);</div><div class="line">	if (index &lt; 0)&#123;</div><div class="line">         return index;</div><div class="line">      &#125;</div><div class="line">      if (key.equals(mArray[index&lt;&lt;1])) &#123;</div><div class="line">          return index;</div><div class="line">      &#125;</div><div class="line">      int end;</div><div class="line">      for (end = index + 1; end &lt; N &amp;&amp; mHashes[end] == hash; end++) &#123;</div><div class="line">         if (key.equals(mArray[end &lt;&lt; 1])) return end;</div><div class="line">      &#125;</div><div class="line">      for (int i = index - 1; i &gt;= 0 &amp;&amp; mHashes[i] == hash; i--) &#123;</div><div class="line">         if (key.equals(mArray[i &lt;&lt; 1])) return i;</div><div class="line">     &#125;</div></pre></td></tr></table></figure></p>
+<p>查找当前key对于index,在mArry中index*2+1即为对应value<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">public V get(Object key) &#123;</div><div class="line">      final int index = indexOfKey(key);</div><div class="line">      return index &gt;= 0 ? (V)mArray[(index&lt;&lt;1)+1] : null;</div><div class="line">  &#125;</div></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.png" alt="Gopoo WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android源码/" rel="tag"># Android源码</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/11/13/Android实习秋招面经/" rel="next" title="Android实习秋招面经">
+                <i class="fa fa-chevron-left"></i> Android实习秋招面经
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <p class="site-author-name" itemprop="name">Gopoo</p>
+            <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives/">
+            
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gopoo" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="zzz@cumt.edu.cn" target="_blank" title="E-Mail">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                    
+                      E-Mail
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SparseArray-介绍"><span class="nav-number">2.</span> <span class="nav-text">SparseArray 介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SparseArray源码分析"><span class="nav-number">3.</span> <span class="nav-text">SparseArray源码分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ArrayMap介绍"><span class="nav-number">4.</span> <span class="nav-text">ArrayMap介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ArrayMap源码"><span class="nav-number">5.</span> <span class="nav-text">ArrayMap源码</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gopoo</span>
+
+  
+</div>
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
