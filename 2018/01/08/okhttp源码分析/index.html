@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android源码," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="OkHttp用法1.同步123456OkHttpClient client = new OkHttpClient.Builder().connectTimeout(5, TimeUnit.SECONDS).build();      Request request = new Request.Builder()              .url(&amp;quot;http://www.baidu.co">
+<meta name="keywords" content="Android源码">
+<meta property="og:type" content="article">
+<meta property="og:title" content="okhttp源码分析（一）">
+<meta property="og:url" content="http://www.unfamous.cn/2018/01/08/okhttp源码分析/index.html">
+<meta property="og:site_name" content="Gopoo&#39;s blog">
+<meta property="og:description" content="OkHttp用法1.同步123456OkHttpClient client = new OkHttpClient.Builder().connectTimeout(5, TimeUnit.SECONDS).build();      Request request = new Request.Builder()              .url(&amp;quot;http://www.baidu.co">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-01-08T16:00:37.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="okhttp源码分析（一）">
+<meta name="twitter:description" content="OkHttp用法1.同步123456OkHttpClient client = new OkHttpClient.Builder().connectTimeout(5, TimeUnit.SECONDS).build();      Request request = new Request.Builder()              .url(&amp;quot;http://www.baidu.co">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.unfamous.cn/2018/01/08/okhttp源码分析/"/>
+
+
+
+
+
+  <title>okhttp源码分析（一） | Gopoo's blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Gopoo's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.unfamous.cn/2018/01/08/okhttp源码分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Gopoo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Gopoo's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">okhttp源码分析（一）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-08T19:30:58+08:00">
+                2018-01-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="OkHttp用法"><a href="#OkHttp用法" class="headerlink" title="OkHttp用法"></a>OkHttp用法</h2><h3 id="1-同步"><a href="#1-同步" class="headerlink" title="1.同步"></a>1.同步</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">OkHttpClient client = new OkHttpClient.Builder().connectTimeout(5, TimeUnit.SECONDS).build();</div><div class="line">      Request request = new Request.Builder()</div><div class="line">              .url(&quot;http://www.baidu.com&quot;)</div><div class="line">              .build();</div><div class="line">      Call call = client.newCall(request);</div><div class="line">      call.execute();</div></pre></td></tr></table></figure>
+<h3 id="2-异步"><a href="#2-异步" class="headerlink" title="2.异步"></a>2.异步</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">OkHttpClient client = new OkHttpClient.Builder().connectTimeout(5, TimeUnit.SECONDS).build();</div><div class="line">    Request request = new Request.Builder()</div><div class="line">            .url(&quot;http://www.baidu.com&quot;)</div><div class="line">            .build();</div><div class="line">    Call call = client.newCall(request);</div><div class="line">    call.enqueue(new Callback() &#123;</div><div class="line">        @Override</div><div class="line">        public void onFailure(Call call, IOException e) &#123;</div><div class="line"></div><div class="line">        &#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public void onResponse(Call call, Response response) throws IOException &#123;</div><div class="line"></div><div class="line">        &#125;</div><div class="line">    &#125;);</div></pre></td></tr></table></figure>
+<h2 id="请求源码分析（Dispatcher）"><a href="#请求源码分析（Dispatcher）" class="headerlink" title="请求源码分析（Dispatcher）"></a>请求源码分析（Dispatcher）</h2><h3 id="1-创建client对象"><a href="#1-创建client对象" class="headerlink" title="1.创建client对象"></a>1.创建client对象</h3><p>设置连接超时时间、读取超时时间、拦截器，创建dispatcher、连接池等<code>OkHttpClient client = new OkHttpClient.Builder().build();</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">public Builder() &#123;</div><div class="line">	//dispatcher中会创建三个队列来保存call对象，在4、5中介绍</div><div class="line">  dispatcher = new Dispatcher();</div><div class="line">  connectionPool = new ConnectionPool();</div><div class="line">  ......</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public OkHttpClient build() &#123;</div><div class="line">  return new OkHttpClient(this);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="2-创建Request对象"><a href="#2-创建Request对象" class="headerlink" title="2.创建Request对象"></a>2.创建Request对象</h3><p>设置请求方法、请求链接、请求头部等<code>Request request = new Request.Builder().url(&quot;http://www.baidu.com&quot;).build();</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">public Builder() &#123;</div><div class="line">  this.method = &quot;GET&quot;;</div><div class="line">  this.headers = new Headers.Builder();</div><div class="line">&#125;</div><div class="line">public Builder url(HttpUrl url) &#123;</div><div class="line">  if (url == null) throw new NullPointerException(&quot;url == null&quot;);</div><div class="line">  this.url = url;</div><div class="line">  return this;</div><div class="line">&#125;</div><div class="line">public Request build() &#123;</div><div class="line">  if (url == null) throw new IllegalStateException(&quot;url == null&quot;);</div><div class="line">  return new Request(this);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="3-创建Call对象"><a href="#3-创建Call对象" class="headerlink" title="3.创建Call对象"></a>3.创建Call对象</h3><p>将request、client封装为一次请求<code>Call call = client.newCall(request);</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public Call newCall(Request request) &#123;</div><div class="line">    return RealCall.newRealCall(this, request, false);</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">static RealCall newRealCall(OkHttpClient client, Request originalRequest, boolean forWebSocket) &#123;</div><div class="line">  RealCall call = new RealCall(client, originalRequest, forWebSocket);</div><div class="line">  call.eventListener = client.eventListenerFactory().create(call);</div><div class="line">  return call;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">private RealCall(OkHttpClient client, Request originalRequest, boolean forWebSocket) &#123;</div><div class="line">  this.client = client;</div><div class="line">  this.originalRequest = originalRequest;</div><div class="line">  this.forWebSocket = forWebSocket;</div><div class="line">  this.retryAndFollowUpInterceptor = new RetryAndFollowUpInterceptor(client, forWebSocket);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="4-同步请求call-execute"><a href="#4-同步请求call-execute" class="headerlink" title="4.同步请求call.execute();"></a>4.同步请求<code>call.execute();</code></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">public Response execute() throws IOException &#123;</div><div class="line">//同步，设置executed，保证一个call对象只被执行一次，保证线程安全</div><div class="line">    synchronized (this) &#123;</div><div class="line">      if (executed) throw new IllegalStateException(&quot;Already Executed&quot;);</div><div class="line">      executed = true;</div><div class="line">    &#125;</div><div class="line">    captureCallStackTrace();</div><div class="line">    //请求开始执行</div><div class="line">    eventListener.callStart(this);</div><div class="line">    try &#123;</div><div class="line">    //调用dispatcher对象执行call</div><div class="line">      client.dispatcher().executed(this);</div><div class="line">      //通过拦截器链获取请求结果</div><div class="line">      Response result = getResponseWithInterceptorChain();</div><div class="line">      if (result == null) throw new IOException(&quot;Canceled&quot;);</div><div class="line">      return result;</div><div class="line">    &#125; catch (IOException e) &#123;</div><div class="line">      eventListener.callFailed(this, e);</div><div class="line">      throw e;</div><div class="line">    &#125; finally &#123;</div><div class="line">    //执行结束后通过dispatcher结束掉当前call对象</div><div class="line">      client.dispatcher().finished(this);</div><div class="line">    &#125;</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+<p>1.dispatcher的excuted方法将call对象放入runningSyncCalls队列中（runningSyncCalls为dispatcher中三个队列之一，用来保存执行中的同步请求）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">/** Running synchronous calls. Includes canceled calls that haven&apos;t finished yet. */</div><div class="line">private final Deque&lt;RealCall&gt; runningSyncCalls = new ArrayDeque&lt;&gt;();</div><div class="line"></div><div class="line">synchronized void executed(RealCall call) &#123;</div><div class="line">  runningSyncCalls.add(call);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>2.dispatcher的finish方法将call对象从runningSyncCalls队列中移除，并更新当前运行的call的数量(运行中的同步+异步call)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">void finished(RealCall call) &#123;</div><div class="line">  finished(runningSyncCalls, call, false);</div><div class="line">&#125;</div><div class="line"></div><div class="line">private &lt;T&gt; void finished(Deque&lt;T&gt; calls, T call, boolean promoteCalls) &#123;</div><div class="line">  int runningCallsCount;</div><div class="line">  Runnable idleCallback;</div><div class="line">  synchronized (this) &#123;</div><div class="line">  	//移除call，未移除就抛出异常</div><div class="line">    if (!calls.remove(call)) throw new AssertionError(&quot;Call wasn&apos;t in-flight!&quot;);</div><div class="line">    //为false，不执行</div><div class="line">    if (promoteCalls) promoteCalls();</div><div class="line">    runningCallsCount = runningCallsCount();</div><div class="line">    idleCallback = this.idleCallback;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  if (runningCallsCount == 0 &amp;&amp; idleCallback != null) &#123;</div><div class="line">   	//当所有call执行结束且空闲时要执行的runable不为空</div><div class="line">    idleCallback.run();</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="5-异步请求call-enqueue-mCallBack"><a href="#5-异步请求call-enqueue-mCallBack" class="headerlink" title="5.异步请求call.enqueue(mCallBack)"></a>5.异步请求<code>call.enqueue(mCallBack)</code></h3><p>1.将responseCallback封装入AsyncCall对象，调用dispatcher的enqueue方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">public void enqueue(Callback responseCallback) &#123;</div><div class="line">    synchronized (this) &#123;</div><div class="line">      if (executed) throw new IllegalStateException(&quot;Already Executed&quot;);</div><div class="line">      executed = true;</div><div class="line">    &#125;</div><div class="line">    captureCallStackTrace();</div><div class="line">    eventListener.callStart(this);</div><div class="line">    client.dispatcher().enqueue(new AsyncCall(responseCallback));</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+<p><strong>2.接着介绍dispatcher中其他两个队列及线程池</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">//保存就绪的异步call</div><div class="line"> private final Deque&lt;AsyncCall&gt; readyAsyncCalls = new ArrayDeque&lt;&gt;();</div><div class="line">//保存正在执行的异步call</div><div class="line"> private final Deque&lt;AsyncCall&gt; runningAsyncCalls = new ArrayDeque&lt;&gt;();</div><div class="line"> //可以为空，只同步执行时不需要</div><div class="line"> private @Nullable ExecutorService executorService;</div></pre></td></tr></table></figure>
+<p>当执行异步call时，会执行<code>executorService()</code>方法设置executorService线程池，该线程池无核心线程，非核心线程数量不限，线程超过60秒就被回收，无队列（SynchronousQueue无法放入），直接用非核心线程执行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">public synchronized ExecutorService executorService() &#123;</div><div class="line">  if (executorService == null) &#123;</div><div class="line">    executorService = new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60, TimeUnit.SECONDS,</div><div class="line">        new SynchronousQueue&lt;Runnable&gt;(), Util.threadFactory(&quot;OkHttp Dispatcher&quot;, false));</div><div class="line">  &#125;</div><div class="line">  return executorService;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>3.调用enqueue方法后，判断当前是否能执行call，可以执行就将AsyncCall对象放入runningAsyncCalls队列，并将其加入线程池中进行执行，如果不可以就放入就绪队列，等待条件满足后执行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">synchronized void enqueue(AsyncCall call) &#123;</div><div class="line">  if (runningAsyncCalls.size() &lt; maxRequests &amp;&amp; runningCallsForHost(call) &lt; maxRequestsPerHost) &#123;</div><div class="line">    runningAsyncCalls.add(call);</div><div class="line">    executorService().execute(call);</div><div class="line">  &#125; else &#123;</div><div class="line">    readyAsyncCalls.add(call);</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>4.AsyncCall<br>AsyncCall继承自Runable接口，可以直接加入线程池中<code>excute()</code>方法会在NamedRunnable的<code>void run()</code>方法中调用，因此<code>responseCallback.onFailure(RealCall.this, e);</code>与<code>responseCallback.onResponse(RealCall.this, response);</code>即异步请求传入的接口均在子线程中调用，不可操作UI</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">final class AsyncCall extends NamedRunnable &#123;</div><div class="line">  private final Callback responseCallback;</div><div class="line">  AsyncCall(Callback responseCallback) &#123;</div><div class="line">    super(&quot;OkHttp %s&quot;, redactedUrl());</div><div class="line">    this.responseCallback = responseCallback;</div><div class="line">  &#125;</div><div class="line">  ...</div><div class="line">  protected void execute() &#123;</div><div class="line">  	//标记callBack是否被调用</div><div class="line">    boolean signalledCallback = false;</div><div class="line">    try &#123;</div><div class="line">    //通过拦截器获取response</div><div class="line">      Response response = getResponseWithInterceptorChain();</div><div class="line">      if (retryAndFollowUpInterceptor.isCanceled()) &#123;			</div><div class="line">        signalledCallback = true;</div><div class="line">        //调用请求失败方法，线程池中</div><div class="line">        responseCallback.onFailure(RealCall.this, new IOException(&quot;Canceled&quot;));</div><div class="line">      &#125; else &#123;</div><div class="line">      //调用请求成功方法，线程池中</div><div class="line">        signalledCallback = true;</div><div class="line">        responseCallback.onResponse(RealCall.this, response);</div><div class="line">      &#125;</div><div class="line">    &#125; catch (IOException e) &#123;</div><div class="line">      if (signalledCallback) &#123;</div><div class="line">               Platform.get().log(INFO, &quot;Callback failure for &quot; + toLoggableString(), e);</div><div class="line">      &#125; else &#123;</div><div class="line">        eventListener.callFailed(RealCall.this, e);</div><div class="line">        responseCallback.onFailure(RealCall.this, e);</div><div class="line">      &#125;</div><div class="line">    &#125; finally &#123;</div><div class="line">      client.dispatcher().finished(this);</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>5.<code>dispatcher.finished(AsyncCall);</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">void finished(AsyncCall call) &#123;</div><div class="line">  finished(runningAsyncCalls, call, true);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>从runningAsyncCalls中移除call，调用<code>promoteCalls()</code>方法从readyAsyncCalls中移入call执行,更新runningCallsCount，call数量为0且空闲runable不为空即执行该runable</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">private &lt;T&gt; void finished(Deque&lt;T&gt; calls, T call, boolean promoteCalls) &#123;</div><div class="line">  int runningCallsCount;</div><div class="line">  Runnable idleCallback;</div><div class="line">  synchronized (this) &#123;</div><div class="line">    if (!calls.remove(call)) throw new AssertionError(&quot;Call wasn&apos;t in-flight!&quot;);</div><div class="line">    //为true</div><div class="line">    if (promoteCalls) promoteCalls();</div><div class="line">    runningCallsCount = runningCallsCount();</div><div class="line">    idleCallback = this.idleCallback;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  if (runningCallsCount == 0 &amp;&amp; idleCallback != null) &#123;</div><div class="line">    idleCallback.run();</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">private void promoteCalls() &#123;</div><div class="line">  if (runningAsyncCalls.size() &gt;= maxRequests) return; // Already running max capacity.</div><div class="line">  if (readyAsyncCalls.isEmpty()) return; // No ready calls to promote.</div><div class="line"></div><div class="line">  for (Iterator&lt;AsyncCall&gt; i = readyAsyncCalls.iterator(); i.hasNext(); ) &#123;</div><div class="line">    AsyncCall call = i.next();</div><div class="line"></div><div class="line">    if (runningCallsForHost(call) &lt; maxRequestsPerHost) &#123;</div><div class="line">      i.remove();</div><div class="line">      runningAsyncCalls.add(call);</div><div class="line">      executorService().execute(call);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    if (runningAsyncCalls.size() &gt;= maxRequests) return; // Reached max capacity.</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="Dispatcher总结"><a href="#Dispatcher总结" class="headerlink" title="Dispatcher总结"></a>Dispatcher总结</h2><ol>
+<li>包含三个call队列，保存执行中的同步call，执行中的异步call，准备就绪的异步call</li>
+<li>包含一个线程池，无核心线程，队列不可存放，无线非核心线程，有runable需要execute即创建新线程，或复用空闲中的线程，空闲线程超过60秒被回收</li>
+<li>同步中，dispatcher用来存放执行中的call,finish执行中的call，调整执行中的call的数量</li>
+<li>异步中，dispatcher用来存放执行中的call,finish执行中的call，调整执行中的call的数量，促进准备就绪的call执行</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.png" alt="Gopoo WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android源码/" rel="tag"># Android源码</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/08/Fragment懒加载/" rel="next" title="Fragment懒加载">
+                <i class="fa fa-chevron-left"></i> Fragment懒加载
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <p class="site-author-name" itemprop="name">Gopoo</p>
+            <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives/">
+            
+                <span class="site-state-item-count">24</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gopoo" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="zzz@cumt.edu.cn" target="_blank" title="E-Mail">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                    
+                      E-Mail
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#OkHttp用法"><span class="nav-number">1.</span> <span class="nav-text">OkHttp用法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-同步"><span class="nav-number">1.1.</span> <span class="nav-text">1.同步</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-异步"><span class="nav-number">1.2.</span> <span class="nav-text">2.异步</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#请求源码分析（Dispatcher）"><span class="nav-number">2.</span> <span class="nav-text">请求源码分析（Dispatcher）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-创建client对象"><span class="nav-number">2.1.</span> <span class="nav-text">1.创建client对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-创建Request对象"><span class="nav-number">2.2.</span> <span class="nav-text">2.创建Request对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-创建Call对象"><span class="nav-number">2.3.</span> <span class="nav-text">3.创建Call对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-同步请求call-execute"><span class="nav-number">2.4.</span> <span class="nav-text">4.同步请求call.execute();</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-异步请求call-enqueue-mCallBack"><span class="nav-number">2.5.</span> <span class="nav-text">5.异步请求call.enqueue(mCallBack)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Dispatcher总结"><span class="nav-number">3.</span> <span class="nav-text">Dispatcher总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2017 &mdash; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gopoo</span>
+
+  
+</div>
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
