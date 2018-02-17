@@ -79,7 +79,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Java虚拟机," />
+  <meta name="keywords" content="Android," />
 
 
 
@@ -95,22 +95,21 @@
 
 
 
-<meta name="description" content="Java、Class、 dex、 apk文件区别Java：应用程序的源文件Class:Java等语言经过javac编译后生成的字节码，可被Java虚拟机执行dex:Class文件经过dex编译后生成的文件，被Davlik虚拟机执行apk:包含dex文件及资源文件 Class文件结构magic: 值为0xCAFEBABE，标志该文件为可被执行的java字节码minor_version: class文">
-<meta name="keywords" content="Java虚拟机">
+<meta name="description" content="前言看了很多Binder通信机制的博客，一直搞不懂，讲的很复杂，看过《简单明了，彻底地理解Binder》后，大概明白了一些，但是感觉还是不容易理解 Binder的C/S架构这张图描述了Binder基本流程，服务端注册服务，客户端查找到服务后开始请求 Binder 原理上面了解了基本流程，这里介绍凭什么么能跨进程通信1.注册服务：Server通过Binder驱动在ServiceManger中注册，在">
+<meta name="keywords" content="Android">
 <meta property="og:type" content="article">
-<meta property="og:title" content="class与dex区别">
-<meta property="og:url" content="http://www.unfamous.cn/2017/11/03/class文件与dex文件区别/index.html">
+<meta property="og:title" content="Binder机制">
+<meta property="og:url" content="http://www.unfamous.cn/2018/02/04/初探Binder机制/index.html">
 <meta property="og:site_name" content="Gopoo&#39;s blog">
-<meta property="og:description" content="Java、Class、 dex、 apk文件区别Java：应用程序的源文件Class:Java等语言经过javac编译后生成的字节码，可被Java虚拟机执行dex:Class文件经过dex编译后生成的文件，被Davlik虚拟机执行apk:包含dex文件及资源文件 Class文件结构magic: 值为0xCAFEBABE，标志该文件为可被执行的java字节码minor_version: class文">
+<meta property="og:description" content="前言看了很多Binder通信机制的博客，一直搞不懂，讲的很复杂，看过《简单明了，彻底地理解Binder》后，大概明白了一些，但是感觉还是不容易理解 Binder的C/S架构这张图描述了Binder基本流程，服务端注册服务，客户端查找到服务后开始请求 Binder 原理上面了解了基本流程，这里介绍凭什么么能跨进程通信1.注册服务：Server通过Binder驱动在ServiceManger中注册，在">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://img.blog.csdn.net/20131230204449140">
-<meta property="og:image" content="http://images2015.cnblogs.com/blog/855014/201611/855014-20161106141434190-271756210.png">
-<meta property="og:image" content="http://img.blog.csdn.net/20140324203743562">
-<meta property="og:updated_time" content="2017-11-06T15:52:32.000Z">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/2154124-746b33a4cfad1b93.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/2154124-8788ce62c0c7384e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2018-02-17T17:16:16.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="class与dex区别">
-<meta name="twitter:description" content="Java、Class、 dex、 apk文件区别Java：应用程序的源文件Class:Java等语言经过javac编译后生成的字节码，可被Java虚拟机执行dex:Class文件经过dex编译后生成的文件，被Davlik虚拟机执行apk:包含dex文件及资源文件 Class文件结构magic: 值为0xCAFEBABE，标志该文件为可被执行的java字节码minor_version: class文">
-<meta name="twitter:image" content="http://img.blog.csdn.net/20131230204449140">
+<meta name="twitter:title" content="Binder机制">
+<meta name="twitter:description" content="前言看了很多Binder通信机制的博客，一直搞不懂，讲的很复杂，看过《简单明了，彻底地理解Binder》后，大概明白了一些，但是感觉还是不容易理解 Binder的C/S架构这张图描述了Binder基本流程，服务端注册服务，客户端查找到服务后开始请求 Binder 原理上面了解了基本流程，这里介绍凭什么么能跨进程通信1.注册服务：Server通过Binder驱动在ServiceManger中注册，在">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/2154124-746b33a4cfad1b93.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 
 
 
@@ -140,13 +139,13 @@
 
 
 
-  <link rel="canonical" href="http://www.unfamous.cn/2017/11/03/class文件与dex文件区别/"/>
+  <link rel="canonical" href="http://www.unfamous.cn/2018/02/04/初探Binder机制/"/>
 
 
 
 
 
-  <title>class与dex区别 | Gopoo's blog</title>
+  <title>Binder机制 | Gopoo's blog</title>
   
 
 
@@ -263,7 +262,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.unfamous.cn/2017/11/03/class文件与dex文件区别/">
+    <link itemprop="mainEntityOfPage" href="http://www.unfamous.cn/2018/02/04/初探Binder机制/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Gopoo">
@@ -280,7 +279,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">class与dex区别</h1>
+          <h1 class="post-title" itemprop="name headline">Binder机制</h1>
         
 
         <div class="post-meta">
@@ -292,8 +291,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-03T23:03:02+08:00">
-                2017-11-03
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-04T19:15:45+08:00">
+                2018-02-04
               </time>
             
 
@@ -330,12 +329,21 @@
       
 
       
-        <h3 id="Java、Class、-dex、-apk文件区别"><a href="#Java、Class、-dex、-apk文件区别" class="headerlink" title="Java、Class、 dex、 apk文件区别"></a>Java、Class、 dex、 apk文件区别</h3><p>Java：应用程序的源文件<br>Class:Java等语言经过javac编译后生成的字节码，可被Java虚拟机执行<br>dex:Class文件经过dex编译后生成的文件，被Davlik虚拟机执行<br>apk:包含dex文件及资源文件</p>
-<h3 id="Class文件结构"><a href="#Class文件结构" class="headerlink" title="Class文件结构"></a>Class文件结构</h3><p><img src="http://img.blog.csdn.net/20131230204449140" alt=""><br><strong>magic:</strong> 值为0xCAFEBABE，标志该文件为可被执行的java字节码<br><strong>minor_version:</strong> class文件次版本<br><strong>major_version:</strong> class文件住版本，与次版本一起确定class文件对应的jdk版本<br><strong>contast_pool_count、contast_pool:</strong> 常量区，存放字面量、符号引用<br><strong>access_flag:</strong> 标志类或接口的访问权限，如public abstract enum final 等<br><strong>this_class、super_class:</strong> 类索引、超类索引<br><strong>interfact_count、interfaces:</strong> 当前类的直接超类的数量、接口表<br><strong>fileds_count、fields:</strong> 类中类变量和实例变量<br><strong>methods_count、methods:</strong> 类中方法<br><strong>attributes_count、attributes:</strong> 记录文件中定义的类和接口等</p>
-<h3 id="dex文件结构"><a href="#dex文件结构" class="headerlink" title="dex文件结构"></a>dex文件结构</h3><p><img src="http://images2015.cnblogs.com/blog/855014/201611/855014-20161106141434190-271756210.png" alt=""><br>由于dex文件庞大，目前只了解到一个dex文件就记录了所有类的信息</p>
-<h3 id="Class与dex的区别"><a href="#Class与dex的区别" class="headerlink" title="Class与dex的区别"></a>Class与dex的区别</h3><p><img src="http://img.blog.csdn.net/20140324203743562" alt=""><br>1.虚拟机 class用jvm执行，dex用dvm执行<br>2.文件 class中冗余信息多，dex会去除冗余信息，包含所有类，查找方便，适合手机端</p>
-<h3 id="JVM与DVM"><a href="#JVM与DVM" class="headerlink" title="JVM与DVM"></a>JVM与DVM</h3><p>1.JVM基于栈（使用栈帧，内存），DVM基于寄存器，速度更快，适合手机端<br>2.JVM执行Class字节码，DVM执行DEX<br>3.JVM只能有一个实例，一个应用启动运行在一个DVM</p>
-<h3 id="DVM与ART"><a href="#DVM与ART" class="headerlink" title="DVM与ART"></a>DVM与ART</h3><p>DVM：每次运行应用都需要一次编译，效率降低<br>ART：Android5.0以上默认为ART，系统会在程序安装后进行一次预编译，将代码转为机器语言存在本地，这样在每次运行时不用再进行编译，提高启动效率；</p>
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>看了很多Binder通信机制的博客，一直搞不懂，讲的很复杂，看过<a href="http://www.jianshu.com/p/04a034cbbc27" target="_blank" rel="external">《简单明了，彻底地理解Binder》</a>后，大概明白了一些，但是感觉还是不容易理解</p>
+<h3 id="Binder的C-S架构"><a href="#Binder的C-S架构" class="headerlink" title="Binder的C/S架构"></a>Binder的C/S架构</h3><p><img src="http://upload-images.jianshu.io/upload_images/2154124-746b33a4cfad1b93.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><br>这张图描述了Binder基本流程，服务端注册服务，客户端查找到服务后开始请求</p>
+<h3 id="Binder-原理"><a href="#Binder-原理" class="headerlink" title="Binder 原理"></a>Binder 原理</h3><p><img src="http://upload-images.jianshu.io/upload_images/2154124-8788ce62c0c7384e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><br><em>上面了解了基本流程，这里介绍凭什么么能跨进程通信</em><br><strong>1.注册服务</strong>：Server通过Binder驱动在ServiceManger中注册，在Manger中存放名称及Binder的引用（类似DNS）<br><strong>2.查询服务：</strong>Client通过Binder驱动在ServiceManger中根据指定的名称查找Binder的引用,<code>Interface.Stub.asInterface()</code><br><strong>3.使用服务：</strong>Client获取到Binder引用后，调用其方法（即开始进程间通信，此时客户端线程被挂起），Client将数据写入到共享内存中，Binder驱动将Client的数据复制到远程进程的共享内存，远程进程执行<code>onTransact()</code>函数，根据方法的code调用不同的方法返回结果。远程端执行后将数据放入远程端与的共享内存，Binder驱动将返回结果复制到Client的共享内存区（唤起客户端线程）</p>
+<h3 id="AIDL使用"><a href="#AIDL使用" class="headerlink" title="AIDL使用"></a>AIDL使用</h3><ol>
+<li>创建.aidl接口并创建要提供的方法</li>
+<li>创建service进程，在onBind方法中返回<code>Interface.Stub对象</code></li>
+<li>创建ServiceConnection对象，调用<code>Interface.Stub.asInterface(ibinder)</code></li>
+<li>bindService </li>
+<li>调用接口中的方法</li>
+</ol>
+<h3 id="重要方法"><a href="#重要方法" class="headerlink" title="重要方法"></a>重要方法</h3><p>1.asInterface</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">public static com.didi.sourcecodedemo.IMyAidlInterface asInterface(android.os.IBinder obj)</div><div class="line">&#123;</div><div class="line">if ((obj==null)) &#123;</div><div class="line">return null;</div><div class="line">&#125;</div><div class="line">android.os.IInterface iin = obj.queryLocalInterface(DESCRIPTOR);</div><div class="line">if (((iin!=null)&amp;&amp;(iin instanceof com.didi.sourcecodedemo.IMyAidlInterface))) &#123;</div><div class="line">return ((com.didi.sourcecodedemo.IMyAidlInterface)iin);</div><div class="line">&#125;</div><div class="line">return new com.didi.sourcecodedemo.IMyAidlInterface.Stub.Proxy(obj);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如果是跨进程则返回代理对象，否则返回service中binder接口的对象，在<code>obj.queryLocalInterface</code>中判断DESCRIPTOR与Binder对象的DESCRIPTOR是否相等，相等创建binder接口的对象，不相等或者代理对象直接返回代理对象（远程进程返回代理对象继承自BinderProxy类，<code>obj.queryLocalInterface</code>直接return NULL<br>简单来说，客户端根据远程端返回的对象，创建代理对象（跨进程）或者Interface对象（非跨进程）<br>2.onTransact</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">@Override public boolean onTransact(int code, android.os.Parcel data, android.os.Parcel reply, int flags) throws android.os.RemoteException</div><div class="line">&#123;</div><div class="line">	switch (code)</div><div class="line">	&#123;</div><div class="line">		case TRANSACTION_sendMessage:</div><div class="line">		&#123;</div><div class="line">			data.enforceInterface(DESCRIPTOR);</div><div class="line">			int _arg0;</div><div class="line">			_arg0 = data.readInt();</div><div class="line">			java.lang.String _arg1;</div><div class="line">			_arg1 = data.readString();</div><div class="line">			java.lang.String _result = this.setMessage(_arg0, _arg1);</div><div class="line">			reply.writeNoException();</div><div class="line">			reply.writeString(_result);</div><div class="line">			return true;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>服务端根据code判断客户端想要调用的方法，并读出数据，调用远程端中真正实现的方法并将结果写会reply</p>
 
       
     </div>
@@ -377,7 +385,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Java虚拟机/" rel="tag"># Java虚拟机</a>
+            <a href="/tags/Android/" rel="tag"># Android</a>
           
         </div>
       
@@ -390,8 +398,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/11/01/Java虚拟机垃圾回收算法/" rel="next" title="Java虚拟机垃圾回收算法及垃圾回收器">
-                <i class="fa fa-chevron-left"></i> Java虚拟机垃圾回收算法及垃圾回收器
+              <a href="/2018/01/27/OkHttp拦截器/" rel="next" title="OkHttp拦截器">
+                <i class="fa fa-chevron-left"></i> OkHttp拦截器
               </a>
             
           </div>
@@ -400,8 +408,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/11/05/浅谈组件化封装思想/" rel="prev" title="浅谈组件化封装思想">
-                浅谈组件化封装思想 <i class="fa fa-chevron-right"></i>
+              <a href="/2018/02/10/Retrofit源码分析/" rel="prev" title="Retrofit源码分析">
+                Retrofit源码分析 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -550,7 +558,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Java、Class、-dex、-apk文件区别"><span class="nav-number">1.</span> <span class="nav-text">Java、Class、 dex、 apk文件区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Class文件结构"><span class="nav-number">2.</span> <span class="nav-text">Class文件结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#dex文件结构"><span class="nav-number">3.</span> <span class="nav-text">dex文件结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Class与dex的区别"><span class="nav-number">4.</span> <span class="nav-text">Class与dex的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JVM与DVM"><span class="nav-number">5.</span> <span class="nav-text">JVM与DVM</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DVM与ART"><span class="nav-number">6.</span> <span class="nav-text">DVM与ART</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Binder的C-S架构"><span class="nav-number">2.</span> <span class="nav-text">Binder的C/S架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Binder-原理"><span class="nav-number">3.</span> <span class="nav-text">Binder 原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AIDL使用"><span class="nav-number">4.</span> <span class="nav-text">AIDL使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重要方法"><span class="nav-number">5.</span> <span class="nav-text">重要方法</span></a></li></ol></div>
             
 
           </div>
