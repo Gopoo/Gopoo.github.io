@@ -79,7 +79,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Android," />
+  <meta name="keywords" content="Android源码," />
 
 
 
@@ -95,18 +95,18 @@
 
 
 
-<meta name="description" content="简介因为看到了长航拿到了百度offer，就决定也随便投一投。在牛客和实习僧上找了一些招19届的公司，准备了一周，面了滴滴、百度、搜狐和知乎，最后拿了滴滴的offer，其他的没给面试的机会。 百度（挂、30min）0.介绍项目1.讲讲MVP、MVC2.多线程下的单例模式（两种实现方式）3.如何避免过度绘制（设置背景为null）4.如何降低view树等级5.Rxjava了解多少6.AsyncTask源">
-<meta name="keywords" content="Android">
+<meta name="description" content="主要类   类名 作用     Launcher 桌面应用程序   Intrumentation 与ActivityManagerNative 交互，控制Launcher与AMS的交互   ActivityManagerNative 进程间通信中Stub抽象类   ActivityManagerProxy 代理类   IActivityManager aidl接口   ActivityManage">
+<meta name="keywords" content="Android源码">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Android实习秋招面经">
-<meta property="og:url" content="http://www.unfamous.cn/2017/11/13/Android实习秋招面经/index.html">
+<meta property="og:title" content="Activity工作过程">
+<meta property="og:url" content="http://www.unfamous.cn/2018/02/21/Activity工作过程/index.html">
 <meta property="og:site_name" content="Gopoo&#39;s blog">
-<meta property="og:description" content="简介因为看到了长航拿到了百度offer，就决定也随便投一投。在牛客和实习僧上找了一些招19届的公司，准备了一周，面了滴滴、百度、搜狐和知乎，最后拿了滴滴的offer，其他的没给面试的机会。 百度（挂、30min）0.介绍项目1.讲讲MVP、MVC2.多线程下的单例模式（两种实现方式）3.如何避免过度绘制（设置背景为null）4.如何降低view树等级5.Rxjava了解多少6.AsyncTask源">
+<meta property="og:description" content="主要类   类名 作用     Launcher 桌面应用程序   Intrumentation 与ActivityManagerNative 交互，控制Launcher与AMS的交互   ActivityManagerNative 进程间通信中Stub抽象类   ActivityManagerProxy 代理类   IActivityManager aidl接口   ActivityManage">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-11-14T07:33:26.000Z">
+<meta property="og:updated_time" content="2018-02-22T03:49:55.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Android实习秋招面经">
-<meta name="twitter:description" content="简介因为看到了长航拿到了百度offer，就决定也随便投一投。在牛客和实习僧上找了一些招19届的公司，准备了一周，面了滴滴、百度、搜狐和知乎，最后拿了滴滴的offer，其他的没给面试的机会。 百度（挂、30min）0.介绍项目1.讲讲MVP、MVC2.多线程下的单例模式（两种实现方式）3.如何避免过度绘制（设置背景为null）4.如何降低view树等级5.Rxjava了解多少6.AsyncTask源">
+<meta name="twitter:title" content="Activity工作过程">
+<meta name="twitter:description" content="主要类   类名 作用     Launcher 桌面应用程序   Intrumentation 与ActivityManagerNative 交互，控制Launcher与AMS的交互   ActivityManagerNative 进程间通信中Stub抽象类   ActivityManagerProxy 代理类   IActivityManager aidl接口   ActivityManage">
 
 
 
@@ -136,13 +136,13 @@
 
 
 
-  <link rel="canonical" href="http://www.unfamous.cn/2017/11/13/Android实习秋招面经/"/>
+  <link rel="canonical" href="http://www.unfamous.cn/2018/02/21/Activity工作过程/"/>
 
 
 
 
 
-  <title>Android实习秋招面经 | Gopoo's blog</title>
+  <title>Activity工作过程 | Gopoo's blog</title>
   
 
 
@@ -259,7 +259,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.unfamous.cn/2017/11/13/Android实习秋招面经/">
+    <link itemprop="mainEntityOfPage" href="http://www.unfamous.cn/2018/02/21/Activity工作过程/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Gopoo">
@@ -276,7 +276,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Android实习秋招面经</h1>
+          <h1 class="post-title" itemprop="name headline">Activity工作过程</h1>
         
 
         <div class="post-meta">
@@ -288,8 +288,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-13T22:29:56+08:00">
-                2017-11-13
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-21T18:01:41+08:00">
+                2018-02-21
               </time>
             
 
@@ -326,19 +326,71 @@
       
 
       
-        <h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>因为看到了长航拿到了百度offer，就决定也随便投一投。在牛客和实习僧上找了一些招19届的公司，准备了一周，面了滴滴、百度、搜狐和知乎，最后拿了滴滴的offer，其他的没给面试的机会。</p>
-<h3 id="百度（挂、30min）"><a href="#百度（挂、30min）" class="headerlink" title="百度（挂、30min）"></a>百度（挂、30min）</h3><p>0.介绍项目<br>1.讲讲MVP、MVC<br>2.多线程下的单例模式（两种实现方式）<br>3.如何避免过度绘制（设置背景为null）<br>4.如何降低view树等级<br>5.Rxjava了解多少<br>6.AsyncTask源码<br>7.Handler消息机制<br>8.事件分发机制<br>9.对我的评价：知识掌握的比较全面，不要在意看多少源码（这句有问题，要多看源码）</p>
-<p>由于是外卖部门，已被饿了么收购，也没抱什么幻想。</p>
-<h3 id="搜狐（挂、40-min）"><a href="#搜狐（挂、40-min）" class="headerlink" title="搜狐（挂、40+min）"></a>搜狐（挂、40+min）</h3><p>0.如何避免过度绘制（答的不全面，只知道删除背景）<br>1.AsyncTask源码<br>2.项目<br>3.事件分发机制<br>4.MVP MVVM<br>5.Java内存模型（定义多线程和堆之间的工作方式，当时回答成了Java运行时数据区，网上有很多博客误导大众）<br>6.消息机制<br>7.自定义view？<br>8.CoordinatorLayout<br>9.Glide源码（没看过）<br>10.查找数组中相同的数并输出下标（当时想的先取出一个数然后遍历数组，时间复杂度较高）</p>
-<p>我们招研究生，不怎么招19届的，然后开始分析我的不足，由于面试官看的旧版本源码和我说的不一致，然后就以为我看的别人博客的总结，对我产生误解。</p>
-<h3 id="知乎（挂、30-min）"><a href="#知乎（挂、30-min）" class="headerlink" title="知乎（挂、30+min）"></a>知乎（挂、30+min）</h3><p>0.矿大浏览器发给他<br>1.X5WebView的坑（不清楚，忘完了）<br>2.ConstraintLayout？（不知道，但知道CoordinatorLayout，然后将这个详细解释了一下）<br>3.知道CoordinatorLayout的子View中behavior是干嘛的吗？（和toolbar交互）<br>4.Rxjava熟悉吗？（不熟悉）<br>5.retrofit注解有哪些？（Get Post  Put  Delete Streaming）<br>6.Http协议和TCP协议有什么区别（问到这感觉已经凉了，对不起计网老师）<br>7.Http报文的组成（又凉了）<br>8.简历上的BRVAH是什么？BaseRecyclerViewHolderAdapter<br>9.Fragment生命周期？onAttach干嘛的？<br>10.RecyclerView和ListView的区别<br>11.学过什么新技术？AndFix热修复</p>
-<p>知乎注重开发的能力，对底层原理不怎么要求，由于忘了Http挂的理所当然</p>
-<h3 id="滴滴一面（offer、47min）"><a href="#滴滴一面（offer、47min）" class="headerlink" title="滴滴一面（offer、47min）"></a>滴滴一面（offer、47min）</h3><p>0.过度绘制是什么？<br>1.怎么降低view树等级？<br>2.Handler消息机制<br>3.项目<br>4.开始写代码：二分搜索（递归、非递归）、插入排序 （大约 30min）</p>
-<p>一面比较简单，主要是写了一些代码，都忘了</p>
-<h3 id="滴滴二面（41min）"><a href="#滴滴二面（41min）" class="headerlink" title="滴滴二面（41min）"></a>滴滴二面（41min）</h3><p>0.项目介绍，为什么某项目没做完？（没人写后台）<br>1.butterknife原理（不清楚，猜测是反射），对性能有什么影响？<br>2.过度绘制怎么解决？（解决背景，设置activity背景为null）<br>3.view树等级怎么降低？（RelativeLayout代替LinearLayout,，但是RL更消耗CPU）<br>4.为什么RelativeLayout更消耗CPU?(猜测是布局的复杂程度)<br>5.问了一下view、viewgroup的绘制过程<br>6.Service的两种启动方式(start、bind)<br>7.多个Activity启动一个Service会有多少实例？（不清楚，猜测一个，根据同时使用start和bind方法只启动一个猜的）<br>8.service不调用unBind会怎么样？内存泄漏<br>9.滑动冲突处理？给了一个实际例子让我解决<br>10.Volley源码？<br>11.烧一炷A香1个小时，B香半个小时，求烧出45分钟？想了几分钟没想出来，最后面试官问我思路，我说找出15分钟，然后就说这是附加题，他们会考虑我的，以为自己要挂了，说了一句”我真的挺想去的”。</p>
-<p>面试完，试验已经开始1个小时了，走在路上感觉service那边答得稀里糊涂、最后一题也没答好，应该要挂。（其实一面面试官很想让我过去，感觉辜负了他的期望）到教室后给他发”我大概是挂了“，他说没有，已经在准备给你offer了，谢天谢地!二面很注重实际应用，难度较大。</p>
-<h3 id="滴滴三面（0min）"><a href="#滴滴三面（0min）" class="headerlink" title="滴滴三面（0min）"></a>滴滴三面（0min）</h3><p>本来三轮面试，直接跳过了</p>
-<h3 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h3><p>面试真的好累，感觉在那边拿到正式录用offer就不找工作了。真的很感谢滴滴的组长给我机会，主要是幸运才能拿到offer。</p>
+        <h2 id="主要类"><a href="#主要类" class="headerlink" title="主要类"></a>主要类</h2><table>
+<thead>
+<tr>
+<th>类名</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Launcher</td>
+<td>桌面应用程序</td>
+</tr>
+<tr>
+<td>Intrumentation</td>
+<td>与ActivityManagerNative 交互，控制Launcher与AMS的交互</td>
+</tr>
+<tr>
+<td>ActivityManagerNative</td>
+<td>进程间通信中Stub抽象类</td>
+</tr>
+<tr>
+<td>ActivityManagerProxy</td>
+<td>代理类</td>
+</tr>
+<tr>
+<td>IActivityManager</td>
+<td>aidl接口</td>
+</tr>
+<tr>
+<td>ActivityManagerService</td>
+<td>Android中核心服务，负责四大组件的调度、进程管理，继承自ActivityManagerNative，由Native中getDeafult提供单实例</td>
+</tr>
+<tr>
+<td>ActivityStack</td>
+<td>管理Activity栈结构的类</td>
+</tr>
+<tr>
+<td>ActivityThread</td>
+<td>Application的主线程</td>
+</tr>
+<tr>
+<td>ActivityThread.ApplicationThread</td>
+<td>控制应用程序的Binder接口</td>
+</tr>
+<tr>
+<td>ApplicationThreadProxy</td>
+<td>控制应用程序的代理类</td>
+</tr>
+<tr>
+<td>ActivityStackSupervisor</td>
+<td>创建activity、application对象</td>
+</tr>
+</tbody>
+</table>
+<h2 id="启动流程"><a href="#启动流程" class="headerlink" title="启动流程"></a>启动流程</h2><h3 id="1-ActivityThread-startActivity"><a href="#1-ActivityThread-startActivity" class="headerlink" title="1.ActivityThread.startActivity"></a>1.ActivityThread.startActivity</h3><p>通过点击桌面或startActivity启动，无论是哪种方法均执行Activity类中 <code>startActivityForResult</code>，接着调用<code>mInstrumentation.execStartActivity</code></p>
+<h3 id="2-Instrumentation-execStartActivity"><a href="#2-Instrumentation-execStartActivity" class="headerlink" title="2.Instrumentation.execStartActivity"></a>2.Instrumentation.execStartActivity</h3><p>通过<code>ActivityManagerNative.getDefault()</code>获取到ActivityMangerProxy对象，通过binder机制调用AMS中的startActivity()方法</p>
+<h3 id="3-ActivityManagerService-startActivity"><a href="#3-ActivityManagerService-startActivity" class="headerlink" title="3.ActivityManagerService.startActivity"></a>3.ActivityManagerService.startActivity</h3><p>startActivity调用startActivityAsUser</p>
+<h3 id="4-ActivityStackSupervisor-startActivityMayWait"><a href="#4-ActivityStackSupervisor-startActivityMayWait" class="headerlink" title="4.ActivityStackSupervisor.startActivityMayWait"></a>4.ActivityStackSupervisor.startActivityMayWait</h3><p>对intent中传来的信息进行封装</p>
+<h3 id="5-ActivityStackSupervisor-startActivityLocked"><a href="#5-ActivityStackSupervisor-startActivityLocked" class="headerlink" title="5.ActivityStackSupervisor.startActivityLocked"></a>5.ActivityStackSupervisor.startActivityLocked</h3><p>保存调用进程信息，创建activityRecord</p>
+<h3 id="6-ActivityStackSupervisor-startActivityUnchekedLocked"><a href="#6-ActivityStackSupervisor-startActivityUnchekedLocked" class="headerlink" title="6.ActivityStackSupervisor.startActivityUnchekedLocked"></a>6.ActivityStackSupervisor.startActivityUnchekedLocked</h3><h3 id="7-ActivityStack-startActivityUnchecked"><a href="#7-ActivityStack-startActivityUnchecked" class="headerlink" title="7.ActivityStack.startActivityUnchecked"></a>7.ActivityStack.startActivityUnchecked</h3><p>判断即将启动的Activity是否需要在新的task中进行创建和创建新的Task</p>
+<h3 id="8-ActivityStack-startActivityLocked"><a href="#8-ActivityStack-startActivityLocked" class="headerlink" title="8.ActivityStack.startActivityLocked"></a>8.ActivityStack.startActivityLocked</h3><p>确保当前要开启的activity添加到新建的task的顶端。</p>
+<h3 id="9-ActivityStack-resumeTopActivityInnerLocked"><a href="#9-ActivityStack-resumeTopActivityInnerLocked" class="headerlink" title="9.ActivityStack.resumeTopActivityInnerLocked"></a>9.ActivityStack.resumeTopActivityInnerLocked</h3><p>通过调用ApplicationThreadProxy对象（Binder机制）将当前正在运行的LaunchActivity由Resumed状态转换为Paused状态，通过handler发送消息，ActivityThread接受到消息后调用onPause方法，并通过Binder机制告诉AMS</p>
+<h3 id="10-ActivityStackSupervisor-startSpecificActivityLocked"><a href="#10-ActivityStackSupervisor-startSpecificActivityLocked" class="headerlink" title="10.ActivityStackSupervisor.startSpecificActivityLocked"></a>10.ActivityStackSupervisor.startSpecificActivityLocked</h3><p>在AMS中创建进程，根据zygote的fork函数、socket通信，并在其中执行ActivityThread.main()方法</p>
+<h3 id="11-ActivityStackSupervisor-realStartActivityLocked"><a href="#11-ActivityStackSupervisor-realStartActivityLocked" class="headerlink" title="11.ActivityStackSupervisor.realStartActivityLocked"></a>11.ActivityStackSupervisor.realStartActivityLocked</h3><p>通过Binder机制(Proxy对象)向刚创建的进程发送消息，调用<code>performLaunchActivity</code></p>
+<h3 id="12-ActivityThread-performLaunchActivity"><a href="#12-ActivityThread-performLaunchActivity" class="headerlink" title="12.ActivityThread.performLaunchActivity"></a>12.ActivityThread.performLaunchActivity</h3><p>创建activity对象<code>cl.loadClass().newInstance()</code><br>创建application对象<br>创建contextImpl对象，并通过<code>attach</code>关联activity<br>调用<code>onCreate</code>方法</p>
 
       
     </div>
@@ -380,7 +432,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Android/" rel="tag"># Android</a>
+            <a href="/tags/Android源码/" rel="tag"># Android源码</a>
           
         </div>
       
@@ -393,8 +445,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/11/08/HashMap源码分析/" rel="next" title="HashMap源码分析">
-                <i class="fa fa-chevron-left"></i> HashMap源码分析
+              <a href="/2018/02/17/初探Binder机制/" rel="next" title="Binder机制">
+                <i class="fa fa-chevron-left"></i> Binder机制
               </a>
             
           </div>
@@ -403,8 +455,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/12/21/SparseArray、ArrayMap/" rel="prev" title="SparseArray、ArrayMap">
-                SparseArray、ArrayMap <i class="fa fa-chevron-right"></i>
+              <a href="/2018/02/22/排序算法/" rel="prev" title="Java常用排序算法">
+                Java常用排序算法 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -553,7 +605,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#百度（挂、30min）"><span class="nav-number">2.</span> <span class="nav-text">百度（挂、30min）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#搜狐（挂、40-min）"><span class="nav-number">3.</span> <span class="nav-text">搜狐（挂、40+min）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#知乎（挂、30-min）"><span class="nav-number">4.</span> <span class="nav-text">知乎（挂、30+min）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#滴滴一面（offer、47min）"><span class="nav-number">5.</span> <span class="nav-text">滴滴一面（offer、47min）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#滴滴二面（41min）"><span class="nav-number">6.</span> <span class="nav-text">滴滴二面（41min）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#滴滴三面（0min）"><span class="nav-number">7.</span> <span class="nav-text">滴滴三面（0min）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#后记"><span class="nav-number">8.</span> <span class="nav-text">后记</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#主要类"><span class="nav-number">1.</span> <span class="nav-text">主要类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启动流程"><span class="nav-number">2.</span> <span class="nav-text">启动流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-ActivityThread-startActivity"><span class="nav-number">2.1.</span> <span class="nav-text">1.ActivityThread.startActivity</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Instrumentation-execStartActivity"><span class="nav-number">2.2.</span> <span class="nav-text">2.Instrumentation.execStartActivity</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-ActivityManagerService-startActivity"><span class="nav-number">2.3.</span> <span class="nav-text">3.ActivityManagerService.startActivity</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-ActivityStackSupervisor-startActivityMayWait"><span class="nav-number">2.4.</span> <span class="nav-text">4.ActivityStackSupervisor.startActivityMayWait</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-ActivityStackSupervisor-startActivityLocked"><span class="nav-number">2.5.</span> <span class="nav-text">5.ActivityStackSupervisor.startActivityLocked</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-ActivityStackSupervisor-startActivityUnchekedLocked"><span class="nav-number">2.6.</span> <span class="nav-text">6.ActivityStackSupervisor.startActivityUnchekedLocked</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-ActivityStack-startActivityUnchecked"><span class="nav-number">2.7.</span> <span class="nav-text">7.ActivityStack.startActivityUnchecked</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-ActivityStack-startActivityLocked"><span class="nav-number">2.8.</span> <span class="nav-text">8.ActivityStack.startActivityLocked</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-ActivityStack-resumeTopActivityInnerLocked"><span class="nav-number">2.9.</span> <span class="nav-text">9.ActivityStack.resumeTopActivityInnerLocked</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-ActivityStackSupervisor-startSpecificActivityLocked"><span class="nav-number">2.10.</span> <span class="nav-text">10.ActivityStackSupervisor.startSpecificActivityLocked</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-ActivityStackSupervisor-realStartActivityLocked"><span class="nav-number">2.11.</span> <span class="nav-text">11.ActivityStackSupervisor.realStartActivityLocked</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#12-ActivityThread-performLaunchActivity"><span class="nav-number">2.12.</span> <span class="nav-text">12.ActivityThread.performLaunchActivity</span></a></li></ol></li></ol></div>
             
 
           </div>
